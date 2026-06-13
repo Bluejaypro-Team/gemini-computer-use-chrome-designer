@@ -127,11 +127,36 @@ For CI/CD pipelines, scheduled tasks, or headless environments where no Antigrav
 
 ### Architecture
 
+The standalone script uses a **modular, dependency-injected architecture** with zero circular dependencies. All modules form an acyclic DAG:
+
 ```
-[Take Viewport Screenshot] ──> [Query Gemini API] ──> [Execute Mouse/Keyboard via Playwright]
-          ▲                                                                   │
-          └───────────────────────────────────────────────────────────────────┘
+config.js           ← leaf (zero imports — constants + prompt template)
+    ↑
+browser.js          ← imports config.js (Chrome connection + screenshot)
+decision.js         ← imports config.js (AI engine via factory injection)
+actions.js          ← leaf (zero imports — pure action executor)
+    ↑
+agent-loop.js       ← imports config.js (loop with injected deps)
+    ↑
+visual-agent.js     ← composition root (wires DAG, runs loop)
 ```
+
+### Module Reference
+
+| Module | Responsibility | Dependencies |
+|:---|:---|:---|
+| `lib/config.js` | Shared constants (`CDP_ENDPOINT`, `MODEL_ID`, `MAX_STEPS`) and `buildSystemPrompt()` | None |
+| `lib/browser.js` | `connectToChrome(endpoint?)`, `captureScreenshot(page)` | config.js |
+| `lib/decision.js` | `createDecisionEngine(aiClient, modelId?)` factory, `stripCodeFences()` | config.js |
+| `lib/actions.js` | `executeAction(page, decision)` — pure function, no imports | None |
+| `lib/agent-loop.js` | `runAgentLoop(page, goal, deps, maxSteps?)` — injected deps | config.js |
+| `visual-agent.js` | Composition root — wires all modules, constructs AI client, runs loop | All modules |
+
+### Dependency Injection Points
+
+- **AI Client:** `createDecisionEngine(aiClient)` receives the `GoogleGenAI` instance — never captured from globals.
+- **Agent Loop:** `runAgentLoop(page, goal, deps)` receives `{ captureScreenshot, getNextDecision, executeAction }` — all mockable for testing.
+- **CDP Endpoint:** `connectToChrome(endpoint)` accepts optional URL override — defaults to `localhost:9222`.
 
 ### Setup
 
@@ -143,8 +168,6 @@ For CI/CD pipelines, scheduled tasks, or headless environments where no Antigrav
    ```bash
    node visual-agent.js "Your design goal here"
    ```
-
-The full script implementation is in `examples/visual-agent.js`. See the project README for detailed setup instructions.
 
 ---
 

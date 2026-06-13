@@ -100,17 +100,25 @@ graph TD
 
 For CI/CD pipelines, scheduled automation, or headless environments where no Antigravity agent is running.
 
-### Architecture
+### Modular Architecture
 
-```mermaid
-graph TD
-    A["Launch Chrome with Remote Port"] --> B["Playwright Connects via CDP"]
-    B --> C["Capture Viewport Screenshot"]
-    C --> D["Send Screenshot to Gemini API"]
-    D --> E["Gemini Returns Pixel Coordinates"]
-    E --> F["Execute click/drag/type via Playwright Mouse API"]
-    F --> C
+The standalone script uses a **dependency-injected, modular architecture** with zero circular dependencies:
+
 ```
+examples/
+├── visual-agent.js          ← Composition root (wires DAG, runs loop)
+└── lib/
+    ├── config.js            ← Leaf: constants + prompt template (zero imports)
+    ├── browser.js           ← Chrome connection + screenshot (imports config)
+    ├── decision.js          ← AI engine factory with injected client (imports config)
+    ├── actions.js           ← Leaf: pure action executor (zero imports)
+    └── agent-loop.js        ← Core loop with injected deps (imports config)
+```
+
+**Key DI Points:**
+- `createDecisionEngine(aiClient)` — AI client injected, not captured from globals
+- `runAgentLoop(page, goal, { captureScreenshot, getNextDecision, executeAction })` — all mockable
+- `connectToChrome(endpoint?)` — CDP URL injectable for testing
 
 ### Quick Start
 
@@ -192,7 +200,15 @@ return { tag: el.tagName, id: el.id, classes: el.className };
 
 ## 📚 References
 
-- [`SKILL.md`](./SKILL.md) — Full agent instruction set with dual-mode workflows
-- [`references/mcp-tool-schemas.md`](./references/mcp-tool-schemas.md) — Complete Chrome DevTools MCP tool parameter reference
-- [`examples/visual-agent.js`](./examples/visual-agent.js) — Standalone Mode B script
-- [`examples/.env.example`](./examples/.env.example) — Environment variable template
+| File | Purpose |
+|:---|:---|
+| [`SKILL.md`](./SKILL.md) | Full agent instruction set with dual-mode workflows |
+| [`references/mcp-tool-schemas.md`](./references/mcp-tool-schemas.md) | Complete Chrome DevTools MCP tool parameter reference |
+| [`references/mode-a-walkthrough.md`](./references/mode-a-walkthrough.md) | Sample 8-turn agent conversation loop (Snapshot → Click → Verify) |
+| [`examples/visual-agent.js`](./examples/visual-agent.js) | Composition root — wires all modules and runs the agent loop |
+| [`examples/lib/config.js`](./examples/lib/config.js) | Shared constants and prompt template (leaf, zero imports) |
+| [`examples/lib/browser.js`](./examples/lib/browser.js) | Chrome CDP connection + screenshot capture |
+| [`examples/lib/decision.js`](./examples/lib/decision.js) | Gemini decision engine factory with DI |
+| [`examples/lib/actions.js`](./examples/lib/actions.js) | Pure action executor (leaf, zero imports) |
+| [`examples/lib/agent-loop.js`](./examples/lib/agent-loop.js) | Core agent loop with injected dependencies |
+| [`examples/.env.example`](./examples/.env.example) | Environment variable template |
