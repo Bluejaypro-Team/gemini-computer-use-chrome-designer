@@ -1,3 +1,4 @@
+import 'dotenv/config'; // Crucial: Must be line 1 to load environment variables first
 import { chromium } from 'playwright';
 import { GoogleGenAI } from "@google/genai";
 
