@@ -205,6 +205,7 @@ return { tag: el.tagName, id: el.id, classes: el.className };
 | [`SKILL.md`](./SKILL.md) | Full agent instruction set with dual-mode workflows |
 | [`references/mcp-tool-schemas.md`](./references/mcp-tool-schemas.md) | Complete Chrome DevTools MCP tool parameter reference |
 | [`references/mode-a-walkthrough.md`](./references/mode-a-walkthrough.md) | Sample 8-turn agent conversation loop (Snapshot → Click → Verify) |
+| [`references/prompting-guide.md`](./references/prompting-guide.md) | 12 prompt templates with placeholder fields, modifier flags, and compound workflows |
 | [`examples/visual-agent.js`](./examples/visual-agent.js) | Composition root — wires all modules and runs the agent loop |
 | [`examples/lib/config.js`](./examples/lib/config.js) | Shared constants and prompt template (leaf, zero imports) |
 | [`examples/lib/browser.js`](./examples/lib/browser.js) | Chrome CDP connection + screenshot capture |
