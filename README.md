@@ -43,8 +43,8 @@ graph TD
 
 ## 🎨 Key Design Use Cases
 
-### 1. Drag-and-Drop Layout Building
-Visual builders require moving widgets from a sidebar panel to a precise landing spot on the canvas. Gemini reviews the screenshot, identifies the widget panel and the target drop zone, and provides exact start/end coordinates.
+### 1. Non-Destructive Visual Auditing & In-Place Duplication
+Eliminates rogue widget creation and raw HTML injection. The agent audits layouts via Node A (visual coordinate inspection) and modifies elements or duplicates repeating structures (accordions, tabs, FAQs) via Node B (DOM precision and `$e.run('document/repeater/duplicate')`) without dragging standalone elements from the sidebar.
 
 ### 2. Spacing & Alignment Audits
 Instruct the agent to verify layouts against design rules, such as a **1250px Signature Grid** or an **80/50/35 Spacing Protocol** (80px Desktop / 50px Tablet / 35px Mobile padding). The agent takes screenshots at responsive breakpoints and flags padding overflows or element wrapping issues.
@@ -92,18 +92,27 @@ Set your Gemini API key in your environment and run the agent script, specifying
 # Set API Key (Windows PowerShell)
 $env:GEMINI_API_KEY="your-api-key-here"
 
-# Run Agent
-node visual-agent.js "Click on the main site logo, then verify that the mobile hamburger menu opens on a 375px viewport"
+# Option A1: Run via Attached CDP Session (Port 9222)
+python scripts/visual_designer_cli.py audit --url "https://example.com" --goal "Audit 1250px signature grid alignment"
+
+# Option A2: Run via Autonomous Cloud Runner (Headless gcloud Linux VM profile)
+python scripts/visual_designer_cli.py audit --cloud-runner --url "https://example.com" --goal "Audit 1250px signature grid alignment"
+
+# Option A3: Run Grounded Real-Case FAQ Duplication Pipeline
+python scripts/visual_designer_cli.py real-case --staging-url "https://burnet.elkgroveseocompany.com"
+
+# Option B: Run via Node.js Visual Agent
+node examples/visual-agent.js "Click on the main site logo, then verify that the mobile hamburger menu opens on a 375px viewport"
 ```
 
 ---
 
 ## 🧩 Advanced Pattern: Hybrid Visual + DOM Control
 
-To minimize coordinate drift caused by high-DPI displays or browser zoom settings, combine visual layout understanding with programmatic DOM queries:
+To eliminate coordinate drift caused by high-DPI displays or browser zoom settings, combine visual layout understanding with programmatic DOM queries:
 
-1. **Identify Visually:** Ask Gemini to locate the component (e.g., `"The blue 'Style' panel tab in the Elementor settings bar"`).
-2. **Find Element Bounds:** Use Playwright's locator to search the active DOM and return the exact bounding box:
+1. **Identify Visually (Node A):** Ask Gemini to locate the component (e.g., `"The blue 'Style' panel tab in the Elementor settings bar"`).
+2. **Find Element Bounds (Node B):** Use Playwright's locator to search the active DOM and return the exact bounding box:
    ```javascript
    const element = page.locator('div:has-text("Style")').first();
    const box = await element.boundingBox();
@@ -120,3 +129,6 @@ To minimize coordinate drift caused by high-DPI displays or browser zoom setting
 1. **Viewport Containment:** The agent must only interact within the page viewport (coordinates `[0,0]` to `[width, height]`). It should never interact with Chrome's address bar, tabs, extensions, or the underlying OS.
 2. **Step Verification:** The agent must capture a screenshot after every action to verify that the visual interface has successfully updated before executing the next action.
 3. **Modal Dismissal:** If an popup, overlay, or cookies banner blocks the layout, Gemini must prioritize identifying the dismiss/close button before attempting the core design objective.
+4. **Sidebar Exclusion Zone (`x < 300px`):** The agent automatically rejects canvas actions within the sidebar region to prevent accidental widget drag-and-drop.
+5. **Zero Widget Injection & In-Place Repeater Duplication:** Never instantiate standalone widgets into structured parent repeater containers; always duplicate child elements in-place via `$e.run('document/repeater/duplicate')`.
+6. **Dark Overlay Contrast Shielding:** Ensure text placed over dark containers (`#0F172A`, `#23497F`) uses pure white (`#FFFFFF`) with Gold accents (`#EAB308`) and `rgba(15, 23, 42, 0.7)` backdrop shielding.

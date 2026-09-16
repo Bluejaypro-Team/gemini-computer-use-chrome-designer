@@ -57,8 +57,11 @@ async function runVisualAgent(goalPrompt) {
     }
     const base64Screenshot = screenshotBuffer.toString('base64');
 
+    // Query window.devicePixelRatio for DPI normalization
+    const dpr = await page.evaluate(() => window.devicePixelRatio || 1.0);
+
     // 3. Query Gemini for the next action based on the screenshot and visual layout
-    console.log('Sending screenshot to Gemini...');
+    console.log(`Sending screenshot to Gemini (DPI: ${dpr})...`);
     let response;
     try {
       response = await ai.models.generateContent({
@@ -70,17 +73,21 @@ async function runVisualAgent(goalPrompt) {
               {
                 text: `You are an automated visual QA and site design agent driving a browser. 
 Your goal is: "${goalPrompt}".
+
+CRITICAL SAFETY & GOVERNANCE INVARIANTS:
+- ZERO WIDGET INJECTION: Never drag widgets from sidebar. Do not output "drag" actions.
+- SIDEBAR EXCLUSION ZONE: Never target coordinates within the sidebar panel (x < 300px).
+- NON-DESTRUCTIVE: Inspect, navigate, or click canvas elements only.
+
 Based on this screenshot of the browser viewport, output the single next mouse or keyboard action.
 Coordinate system is absolute pixels relative to the top-left of the viewport.
 
 Output your response strictly as a JSON object, with no markdown tags or extra text:
 {
-  "action": "click" | "drag" | "type" | "wait" | "done",
-  "x": number, // X coordinate for click, type, or start of drag
-  "y": number, // Y coordinate for click, type, or start of drag
-  "text": "string", // String to type (only if action is "type")
-  "endX": number, // Destination X coordinate (only if action is "drag")
-  "endY": number // Destination Y coordinate (only if action is "drag")
+  "action": "click" | "type" | "wait" | "done",
+  "x": number, // X coordinate for click or type
+  "y": number, // Y coordinate for click or type
+  "text": "string" // String to type (only if action is "type")
 }`
               },
               {
@@ -100,7 +107,6 @@ Output your response strictly as a JSON object, with no markdown tags or extra t
 
     // Clean and parse the response JSON
     let responseText = response.text.trim();
-    // Strip markdown code block wrappers if Gemini outputs them
     if (responseText.startsWith('```')) {
       responseText = responseText.replace(/```json|```/g, '').trim();
     }
@@ -123,25 +129,31 @@ Output your response strictly as a JSON object, with no markdown tags or extra t
       break;
     }
 
-    // 5. Execute action using Playwright Mouse and Keyboard API
+    // DPI Normalization & Sidebar Exclusion Enforcement Gate
+    const targetX = (decision.x || 0) / dpr;
+    const targetY = (decision.y || 0) / dpr;
+
+    if (targetX < 300 && decision.action === 'click') {
+      console.warn(`[SAFETY GATE] Action rejected: Target (${targetX}, ${targetY}) is within the Sidebar Exclusion Zone (x < 300px).`);
+      maxSteps--;
+      continue;
+    }
+
+    // 5. Execute action using Playwright Mouse and Keyboard API with stabilization
     try {
       if (decision.action === 'click') {
-        console.log(`Clicking at [x: ${decision.x}, y: ${decision.y}]`);
-        await page.mouse.click(decision.x, decision.y);
-      } else if (decision.action === 'drag') {
-        console.log(`Dragging from [x: ${decision.x}, y: ${decision.y}] to [x: ${decision.endX}, y: ${decision.endY}]`);
-        await page.mouse.move(decision.x, decision.y);
-        await page.mouse.down();
-        // Move in multiple small steps to simulate natural drag-and-drop mechanics
-        await page.mouse.move(decision.endX, decision.endY, { steps: 10 });
-        await page.mouse.up();
+        console.log(`Clicking at normalized [x: ${targetX.toFixed(1)}, y: ${targetY.toFixed(1)}]`);
+        await page.mouse.click(targetX, targetY);
+        await page.waitForLoadState('networkidle').catch(() => {});
+        await new Promise(r => setTimeout(r, 500));
       } else if (decision.action === 'type') {
-        console.log(`Clicking and typing "${decision.text}" at [x: ${decision.x}, y: ${decision.y}]`);
-        await page.mouse.click(decision.x, decision.y);
+        console.log(`Clicking and typing "${decision.text}" at normalized [x: ${targetX.toFixed(1)}, y: ${targetY.toFixed(1)}]`);
+        await page.mouse.click(targetX, targetY);
         await page.keyboard.type(decision.text);
+        await new Promise(r => setTimeout(r, 300));
       } else if (decision.action === 'wait') {
-        console.log('Waiting 2 seconds...');
-        await page.waitForTimeout(2000);
+        console.log('Waiting 1000ms...');
+        await new Promise(r => setTimeout(r, 1000));
       }
     } catch (error) {
       console.error(`Failed to execute action ${decision.action}:`, error.message);

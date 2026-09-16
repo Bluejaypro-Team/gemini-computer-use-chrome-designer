@@ -1,0 +1,170 @@
+{
+  "name": "gemini-computer-use-chrome-designer",
+  "version": "1.4.1",
+  "status": "installed",
+  "error": null,
+  "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
+  "description": "Expert persona and structured visual automation workflow for automating visual site design, builder page-building (Elementor, Gutenberg, Webflow), and responsive audits using Gemini multimodal visual models connected to Chrome DevTools Protocol (CDP). Features in-place nested component repeater duplication, 1250px signature grid enforcement, 80/50/35 spacing protocol, and zero raw HTML injection guardrails.",
+  "author": "Bluejaypro Visual Automation Architect",
+  "category": "Visual Builder Automation & CRO Design Studio",
+  "entrypoint": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/scripts/visual_designer_cli.py",
+  "runtime": {
+    "node": ">=18.0",
+    "python": ">=3.10",
+    "os": ["windows", "linux", "darwin"]
+  },
+  "address_points": {
+    "specification": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/SKILL.md",
+    "manifest": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/manifest.json",
+    "readme": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/README.md",
+    "global_manifest": "C:/Users/User/.gemini/config/skills/.datacloud_skills_manifest",
+    "cli_entrypoint": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/scripts/visual_designer_cli.py",
+    "execution_engine": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/scripts/chrome_designer_agent.py",
+    "execution_graph_matrix": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/docs/v140_execution_graph_and_mapping_matrix.md"
+  },
+  "cloud_runner_specification": {
+    "profile": "gcloud-linux-vm-headless",
+    "flags": [
+      "--force-device-scale-factor=1",
+      "--high-dpi-support=1",
+      "--disable-dev-shm-usage",
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--window-size=1920,1080",
+      "--disable-gpu",
+      "--hide-scrollbars"
+    ],
+    "context": {
+      "viewport": { "width": 1920, "height": 1080 },
+      "device_scale_factor": 1.0,
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    },
+    "cdp_override": {
+      "method": "Emulation.setDeviceMetricsOverride",
+      "params": {
+        "width": 1920,
+        "height": 1080,
+        "deviceScaleFactor": 1.0,
+        "mobile": false
+      }
+    }
+  },
+  "visual_governance_rules": {
+    "html_injection_revocation": {
+      "status": "ENFORCED",
+      "policy": "Never inject raw <style>, <script>, or arbitrary HTML code widgets. All elements must use native builder widgets."
+    },
+    "nested_component_repeater_protocol": {
+      "status": "ENFORCED",
+      "policy": "When modifying repeating components, audit parent container model first and duplicate in-place via $e.run('document/repeater/duplicate') rather than dropping standalone widgets."
+    },
+    "color_contrast_and_accessibility": {
+      "status": "ENFORCED",
+      "policy": "Text over dark overlays must be styled in pure white (#FFFFFF) with Gold accents (#EAB308) and semi-transparent shielding (rgba(15, 23, 42, 0.7))."
+    },
+    "sidebar_exclusion_zone": {
+      "status": "ENFORCED",
+      "policy": "Reject coordinate actions where x < 300px to prevent accidental sidebar drag-start events."
+    },
+    "dpi_normalization_gate": {
+      "status": "ENFORCED",
+      "policy": "Query window.devicePixelRatio before every coordinate action and normalize coordinates when dpr > 1.0."
+    },
+    "domain_boundary_lock": {
+      "status": "ENFORCED",
+      "policy": "Validate page.url() matches target domain before and after every Playwright CDP action."
+    },
+    "save_verification_protocol": {
+      "status": "ENFORCED",
+      "policy": "End modification batches with explicit $e.run('document/save/auto') and verify HTTP response status."
+    },
+    "panel_selection_verification": {
+      "status": "ENFORCED",
+      "policy": "Query active element ID prior to panel input to confirm alignment with target widget ID."
+    }
+  },
+  "forensic_error_handling_taxonomy": {
+    "error_1": { "name": "Rogue Standalone Widget Creation", "severity": "CRITICAL", "mitigation": "Enforced in-place repeater duplication via $e.run" },
+    "error_2": { "name": "Raw HTML Injection via Code Widget", "severity": "CRITICAL", "mitigation": "Revocation of raw code widgets; native builder models only" },
+    "error_3": { "name": "Coordinate Drift on High-DPI Displays", "severity": "HIGH", "mitigation": "DPI normalization via window.devicePixelRatio (x/dpr, y/dpr)" },
+    "error_4": { "name": "Stale Screenshot Loop", "severity": "HIGH", "mitigation": "Mandatory stabilization wait (networkidle + 500ms reflow)" },
+    "error_5": { "name": "Widget Sidebar Misidentification", "severity": "HIGH", "mitigation": "Sidebar Exclusion Zone (x < 300px rejection)" },
+    "error_6": { "name": "Builder Panel State Desync", "severity": "MEDIUM", "mitigation": "Selection ID verification before panel mutations" },
+    "error_7": { "name": "Unsaved Changes & Session Loss", "severity": "MEDIUM", "mitigation": "Explicit save trigger and console verification" },
+    "error_8": { "name": "Multi-Tab Confusion", "severity": "MEDIUM", "mitigation": "Target page/post URL assertion on connection" },
+    "error_9": { "name": "Color Contrast Violation on Dark Overlays", "severity": "MEDIUM", "mitigation": "WCAG 2.1 AA token injection (#FFFFFF, #EAB308, rgba shielding)" },
+    "error_10": { "name": "Cross-Domain Safety Boundary Violation", "severity": "CRITICAL", "mitigation": "Domain boundary lock with DomainBoundaryViolationError" }
+  },
+  "enforcement_rules": {
+    "core_rules": [
+      "ALWAYS perform a mandatory DOM/parent-container pre-audit before inserting elements.",
+      "NEVER drag and drop standalone widgets into structured parent repeater containers.",
+      "ALWAYS duplicate existing child elements when adding items to accordions, tabs, FAQs, or icon lists."
+    ],
+    "dos": [
+      "Pre-Audit Requirement: Force a DOM lookup step before taking layout actions (prevents No DOM Pre-Audit Protocol).",
+      "Duplication Protocol: Mandate using Elementor's native duplicate command (.elementor-repeater-tool-duplicate) to guarantee styling inheritance for typography, background tokens, hover states, and keyboard tab order.",
+      "Accessibility Shielding: Require pure white text (#FFFFFF) with semi-transparent overlays (rgba(15, 23, 42, 0.7)) for text layered over dark containers.",
+      "Save Verification: After every modification batch, trigger $e.run('document/save/auto') and verify response.",
+      "Domain Boundary Lock: Assert page.url() matches target domain before and after every action.",
+      "DPI Normalization: Query devicePixelRatio and divide coordinates when dpr !== 1.0.",
+      "Panel Selection Verification: Verify selected element ID matches intended target before panel modifications."
+    ],
+    "donts": [
+      "NEVER fall back to standalone widget creation when hasRepeaterAdd returns false.",
+      "NEVER use createElement API to instantiate new widgets when existing structures can be duplicated.",
+      "NEVER inject raw HTML via style, script, or HTML Code widgets.",
+      "NEVER click within the sidebar exclusion zone (x < 300px) during canvas operations.",
+      "NEVER execute consecutive click actions without stabilization screenshot.",
+      "NEVER rely on default paragraph text colors (#334155) over dark overlays."
+    ],
+    "detection_and_purge": "If a background fill mismatch (#FFFFFF vs #F0F4F9) or broken tab order is detected during post-action visual audit, immediately locate and delete the rogue standalone widget using Elementor Navigator panel, then execute the In-Place Repeater Duplication Protocol.",
+    "nlm_forensic_source": {
+      "podcast": "The Gemini designer agent logic failure (33:36 Deep Dive)",
+      "briefing_doc": "Forensic Analysis and Operational Standards: Gemini Computer Use Chrome Designer Skill",
+      "notebook_url": "https://notebook.google.com/notebook/2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+      "execution_matrix_source": "Gemini Computer-Use Chrome Designer v1.4.0: Execution-Level Architecture & Forensic Error Mapping Matrix",
+      "source_ingestion_status": "ACTIVE_VERIFIED"
+    }
+  },
+  "semver_tracking": {
+    "current_version": "1.4.1",
+    "change_history": [
+      {
+        "version": "1.0.0",
+        "date": "2026-09-14",
+        "description": "Initial scaffold of Gemini Computer Use visual automation and CDP bridge."
+      },
+      {
+        "version": "1.1.0",
+        "date": "2026-09-16",
+        "description": "Skill repair: Codified Strategy D (In-Place Nested Component Repeater Duplication) and Contrast Accessibility Guardrail following Turn 68 & Turn 69 visual audits on Burnette Construction."
+      },
+      {
+        "version": "1.2.0",
+        "date": "2026-09-16",
+        "description": "Skill repair v2: Transcript-grounded root cause with exact step references (3709→3714→3718→3730→3731) from session 9e4b293b. Root cause: hasRepeaterAdd=false caused standalone widget cc5bc34 fallback instead of $e.run('document/repeater/duplicate') on nested-accordion 9c3d93f."
+      },
+      {
+        "version": "1.3.0",
+        "date": "2026-09-16",
+        "description": "Enforcement rules v3: Added explicit DO's/DON'Ts governance block sourced from NLM 33:36 podcast 'The Gemini designer agent logic failure' and Briefing Doc 'Forensic Analysis and Operational Standards'."
+      },
+      {
+        "version": "1.3.1",
+        "date": "2026-09-16",
+        "description": "Skill repair complete: Created visual_designer_cli.py entrypoint orchestrator, updated chrome_designer_agent.py with all 10 error class programmatic handlers, updated SKILL.md and README.md to replace legacy canvas element dragging with Zero-Widget Viewport & Spatial Auditing, patched visual-agent.js with DPI normalization and sidebar exclusion gate, synchronized mirror repositories, and updated manifest SHA-256 in .datacloud_skills_manifest."
+      },
+      {
+        "version": "1.4.0",
+        "date": "2026-09-16",
+        "description": "Skill upgrade v1.4.0: Added autonomous Cloud Runner mode with gcloud Linux VM flags (--force-device-scale-factor=1, --disable-dev-shm-usage, --hide-scrollbars), low-level CDP Emulation.setDeviceMetricsOverride (1920x1080), 8 declarative ENFORCED governance rules, 3-Cluster Sequential Interception Architecture with Mermaid visual workflow, and real-case CLI subcommand for Burnette Construction ADU FAQ duplication."
+      },
+      {
+        "version": "1.4.1",
+        "date": "2026-09-16",
+        "description": "Skill repair & NLM RAG synchronization: Ingested execution-level architecture and 10-class forensic error mapping matrix (docs/v140_execution_graph_and_mapping_matrix.md) into live NotebookLM workspace, registered execution_graph_matrix address point, and synced all global mirrors."
+      }
+    ]
+  }
+}
