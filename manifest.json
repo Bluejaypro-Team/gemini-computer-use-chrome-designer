@@ -7,20 +7,21 @@
   "description": "Expert persona and structured visual automation workflow for automating visual site design, builder page-building (Elementor, Gutenberg, Webflow), and responsive audits using Gemini multimodal visual models connected to Chrome DevTools Protocol (CDP). Features in-place nested component repeater duplication, 1250px signature grid enforcement, 80/50/35 spacing protocol, and zero raw HTML injection guardrails.",
   "author": "Bluejaypro Visual Automation Architect",
   "category": "Visual Builder Automation & CRO Design Studio",
-  "entrypoint": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/scripts/visual_designer_cli.py",
+  "entrypoint": "scripts/visual_designer_cli.py",
+  "cloud_artifact_registry": "us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest",
   "runtime": {
     "node": ">=18.0",
     "python": ">=3.10",
     "os": ["windows", "linux", "darwin"]
   },
   "address_points": {
-    "specification": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/SKILL.md",
-    "manifest": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/manifest.json",
-    "readme": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/README.md",
-    "global_manifest": "C:/Users/User/.gemini/config/skills/.datacloud_skills_manifest",
-    "cli_entrypoint": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/scripts/visual_designer_cli.py",
-    "execution_engine": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/scripts/chrome_designer_agent.py",
-    "execution_graph_matrix": "C:/Users/User/.gemini/config/skills/gemini-computer-use-chrome-designer/docs/v140_execution_graph_and_mapping_matrix.md"
+    "specification": "SKILL.md",
+    "manifest": "manifest.json",
+    "readme": "README.md",
+    "global_manifest": "../.datacloud_skills_manifest",
+    "cli_entrypoint": "scripts/visual_designer_cli.py",
+    "execution_engine": "scripts/chrome_designer_agent.py",
+    "execution_graph_matrix": "docs/v140_execution_graph_and_mapping_matrix.md"
   },
   "cloud_runner_specification": {
     "profile": "gcloud-linux-vm-headless",

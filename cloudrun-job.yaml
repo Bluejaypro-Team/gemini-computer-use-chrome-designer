@@ -1,0 +1,39 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: gemini-chrome-designer-job
+  namespace: tidal-mode-490503-i9
+  labels:
+    skill: gemini-computer-use-chrome-designer
+    team: bluejaypro
+    environment: production
+  annotations:
+    run.googleapis.com/launch-stage: GA
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      serviceAccountName: bjp-agent-runner@tidal-mode-490503-i9.iam.gserviceaccount.com
+      taskCount: 1
+      parallelism: 1
+      template:
+        spec:
+          containers:
+            - image: us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest
+              resources:
+                limits:
+                  cpu: "2"
+                  memory: 4Gi
+              env:
+                - name: GEMINI_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: gemini-api-key
+                      key: latest
+              # Cloud Runner Specification Flags passed as args
+              args:
+                - "cloud-run"
+          maxRetries: 1
+          timeoutSeconds: 1200

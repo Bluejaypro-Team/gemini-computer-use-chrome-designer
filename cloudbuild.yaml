@@ -1,0 +1,46 @@
+steps:
+  # ── Step 1: Build container image ─────────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:$SHORT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest'
+      - '--cache-from'
+      - 'us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest'
+      - '.'
+    dir: '.'
+
+  # ── Step 2: Push image with both tags ─────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer'
+
+  # ── Step 3: Update Cloud Run Job ──────────────────────────────────────
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'replace'
+      - 'cloudrun-job.yaml'
+      - '--region=us-central1'
+      - '--project=tidal-mode-490503-i9'
+
+images:
+  - 'us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+  substitutionOption: 'ALLOW_LOOSE'
+
+tags:
+  - 'gemini-chrome-designer'
+  - 'agent-releases'
+
+timeout: '900s'

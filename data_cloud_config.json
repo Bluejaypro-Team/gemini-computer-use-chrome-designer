@@ -1,0 +1,43 @@
+{
+  "skill_name": "gemini-computer-use-chrome-designer",
+  "version": "1.4.1",
+  "gcp_project": "tidal-mode-490503-i9",
+  "gcp_region": "us-central1",
+  "cloud_artifact_registry": "us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest",
+  "cloud_run_job": "gemini-chrome-designer-job",
+  "service_account": "bjp-agent-runner@tidal-mode-490503-i9.iam.gserviceaccount.com",
+  "secrets": {
+    "gemini-api-key": {
+      "secret_manager_id": "gemini-api-key",
+      "description": "API Key for Gemini 2.5 Computer Use model"
+    }
+  },
+  "compute": {
+    "cpu": "2",
+    "memory": "4Gi",
+    "timeout_seconds": 1200,
+    "max_retries": 1,
+    "execution_environment": "gen2"
+  },
+  "build": {
+    "machine_type": "E2_HIGHCPU_8",
+    "timeout": "900s",
+    "logging": "CLOUD_LOGGING_ONLY",
+    "tags": ["gemini-chrome-designer", "agent-releases"]
+  },
+  "runtime": {
+    "base_image": "python:3.10-slim-bookworm",
+    "python": ">=3.10",
+    "system_packages": [
+      "wget", "curl", "libnss3", "libx11-6", "libxcb1", "libxcomposite1",
+      "libxcursor1", "libxdamage1", "libxext6", "libxi6", "libxtst6", 
+      "libglib2.0-0", "libnss3", "libcups2", "libdbus-1-3", "libxrandr2", 
+      "libasound2", "libatk1.0-0", "libatk-bridge2.0-0", "libpango-1.0-0", "libcairo2"
+    ],
+    "python_packages": ["playwright", "google-genai", "pillow"]
+  },
+  "environment_variables": {
+    "PLAYWRIGHT_BROWSERS_PATH": "0"
+  },
+  "quota_project": "tidal-mode-490503-i9"
+}
