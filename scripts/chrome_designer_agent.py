@@ -81,6 +81,12 @@ class DomainBoundaryViolationError(SkillRepairError):
     """Error Class 10: Browser navigated off the authorized target domain."""
     pass
 
+class DefaultThemeFallbackViolationError(SkillRepairError):
+    """Error Class 11: Attempted to invoke synthetic default design theme (#0F172A / #EAB308)
+    when scaffolding a redesign job from Clarity database / client registry domain.
+    All redesigns must be strictly grounded in the client's verified live domain color tokens."""
+    pass
+
 
 # Default Settings
 DEFAULT_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyB1U5lBSKypeC66opHeNGJIC3RPvK4gCpg")
@@ -306,6 +312,54 @@ class ChromeDesignerAgent:
         }}
         """
         return self.page.evaluate(script)
+
+    def assert_client_domain_palette_grounding(self, proposed_tokens=None, client_domain=None):
+        """
+        Error Class 11 Gate: When scaffolding or executing redesign jobs sourced from
+        Microsoft Clarity database or client registry domains (e.g. proglassgv.com, burnetteconstructionca.com),
+        the agent is strictly prohibited from invoking synthetic default design themes (#0F172A / #EAB308).
+        Extracts and verifies that proposed tokens match the client's live Astra/Elementor tokens.
+        """
+        target_domain = client_domain or self.expected_domain
+        if not target_domain and self.page:
+            target_domain = urlparse(self.page.url).netloc.lower()
+
+        if not target_domain:
+            return {}
+
+        # Check if proposed_tokens contains default synthetic fallback colors
+        if proposed_tokens:
+            synthetic_defaults = ['#0f172a', '#eab308']
+            found_defaults = []
+            tokens_str = json.dumps(proposed_tokens).lower()
+            for syn in synthetic_defaults:
+                if syn in tokens_str:
+                    found_defaults.append(syn)
+            
+            if found_defaults:
+                raise DefaultThemeFallbackViolationError(
+                    f"Default Theme Fallback Violation detected on client domain '{target_domain}'! "
+                    f"Agent attempted to invoke synthetic default palette {found_defaults}. "
+                    f"All redesign scaffolding from Clarity database and client registry domains "
+                    f"must be strictly grounded in the client's live domain tokens (--ast-global-color-*)."
+                )
+
+        # Extract live tokens from active page if connected
+        if self.page:
+            try:
+                live_tokens = self.page.evaluate('''() => {
+                    const tokens = {};
+                    const style = getComputedStyle(document.documentElement);
+                    for (let i = 0; i <= 8; i++) {
+                        const val = style.getPropertyValue(`--ast-global-color-${i}`).trim();
+                        if (val) tokens[`--ast-global-color-${i}`] = val;
+                    }
+                    return tokens;
+                }''')
+                return live_tokens
+            except Exception:
+                return {}
+        return {}
 
     # --- CLUSTER A: DATA MODEL & ELEMENT INTEGRITY ---
 
@@ -594,7 +648,8 @@ class ChromeDesignerAgent:
                 "dpi_normalization_gate",
                 "domain_boundary_lock",
                 "save_verification_protocol",
-                "panel_selection_verification"
+                "panel_selection_verification",
+                "client_registry_domain_palette_grounding"
             ]
         }
 

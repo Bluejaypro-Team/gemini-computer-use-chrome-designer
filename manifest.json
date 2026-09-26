@@ -1,6 +1,6 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
@@ -61,7 +61,7 @@
     },
     "color_contrast_and_accessibility": {
       "status": "ENFORCED",
-      "policy": "Text over dark overlays must be styled in pure white (#FFFFFF) with Gold accents (#EAB308) and semi-transparent shielding (rgba(15, 23, 42, 0.7))."
+      "policy": "Text over dark overlays must be styled in pure white (#FFFFFF) with client-grounded accents and semi-transparent shielding (rgba(15, 23, 42, 0.7))."
     },
     "sidebar_exclusion_zone": {
       "status": "ENFORCED",
@@ -82,6 +82,10 @@
     "panel_selection_verification": {
       "status": "ENFORCED",
       "policy": "Query active element ID prior to panel input to confirm alignment with target widget ID."
+    },
+    "client_registry_domain_palette_grounding": {
+      "status": "ENFORCED",
+      "policy": "When scaffolding or executing a redesign job from Microsoft Clarity database or any client registry channel domain, the agent is strictly prohibited from invoking synthetic default design theme choices (such as generic Midnight Blue #0F172A and Gold #EAB308). All design tokens, button styles, accents, and surfaces must be extracted directly from the live domain Astra/Elementor CSS tokens (--ast-global-color-*)."
     }
   },
   "forensic_error_handling_taxonomy": {
@@ -93,14 +97,16 @@
     "error_6": { "name": "Builder Panel State Desync", "severity": "MEDIUM", "mitigation": "Selection ID verification before panel mutations" },
     "error_7": { "name": "Unsaved Changes & Session Loss", "severity": "MEDIUM", "mitigation": "Explicit save trigger and console verification" },
     "error_8": { "name": "Multi-Tab Confusion", "severity": "MEDIUM", "mitigation": "Target page/post URL assertion on connection" },
-    "error_9": { "name": "Color Contrast Violation on Dark Overlays", "severity": "MEDIUM", "mitigation": "WCAG 2.1 AA token injection (#FFFFFF, #EAB308, rgba shielding)" },
-    "error_10": { "name": "Cross-Domain Safety Boundary Violation", "severity": "CRITICAL", "mitigation": "Domain boundary lock with DomainBoundaryViolationError" }
+    "error_9": { "name": "Color Contrast Violation on Dark Overlays", "severity": "MEDIUM", "mitigation": "WCAG 2.1 AA token injection (#FFFFFF, client-grounded accents, rgba shielding)" },
+    "error_10": { "name": "Cross-Domain Safety Boundary Violation", "severity": "CRITICAL", "mitigation": "Domain boundary lock with DomainBoundaryViolationError" },
+    "error_11": { "name": "Default Theme Fallback Violation", "severity": "CRITICAL", "mitigation": "Strict live domain CSS token extraction via CDP before scaffolding; prohibition of synthetic default theme (#0F172A/#EAB308) fallbacks on client registry domains" }
   },
   "enforcement_rules": {
     "core_rules": [
       "ALWAYS perform a mandatory DOM/parent-container pre-audit before inserting elements.",
       "NEVER drag and drop standalone widgets into structured parent repeater containers.",
-      "ALWAYS duplicate existing child elements when adding items to accordions, tabs, FAQs, or icon lists."
+      "ALWAYS duplicate existing child elements when adding items to accordions, tabs, FAQs, or icon lists.",
+      "NEVER invoke default synthetic design themes (#0F172A / #EAB308) when scaffolding redesigns from Clarity database or client registry domains; ALWAYS ground design tokens in the client's live domain."
     ],
     "dos": [
       "Pre-Audit Requirement: Force a DOM lookup step before taking layout actions (prevents No DOM Pre-Audit Protocol).",
@@ -109,7 +115,8 @@
       "Save Verification: After every modification batch, trigger $e.run('document/save/auto') and verify response.",
       "Domain Boundary Lock: Assert page.url() matches target domain before and after every action.",
       "DPI Normalization: Query devicePixelRatio and divide coordinates when dpr !== 1.0.",
-      "Panel Selection Verification: Verify selected element ID matches intended target before panel modifications."
+      "Panel Selection Verification: Verify selected element ID matches intended target before panel modifications.",
+      "Client Domain Grounding: When scaffolding a redesign from Clarity telemetry or client registry channel domains, query live stylesheet and theme CSS tokens (--ast-global-color-*, --e-global-color-*) to inherit authentic brand colors before modifying any UI."
     ],
     "donts": [
       "NEVER fall back to standalone widget creation when hasRepeaterAdd returns false.",
@@ -117,7 +124,8 @@
       "NEVER inject raw HTML via style, script, or HTML Code widgets.",
       "NEVER click within the sidebar exclusion zone (x < 300px) during canvas operations.",
       "NEVER execute consecutive click actions without stabilization screenshot.",
-      "NEVER rely on default paragraph text colors (#334155) over dark overlays."
+      "NEVER rely on default paragraph text colors (#334155) over dark overlays.",
+      "NEVER invoke or fall back to default synthetic design theme choices (#0F172A / #EAB308 or arbitrary luxury palettes) on client registry redesign tasks."
     ],
     "detection_and_purge": "If a background fill mismatch (#FFFFFF vs #F0F4F9) or broken tab order is detected during post-action visual audit, immediately locate and delete the rogue standalone widget using Elementor Navigator panel, then execute the In-Place Repeater Duplication Protocol.",
     "nlm_forensic_source": {
@@ -129,7 +137,7 @@
     }
   },
   "semver_tracking": {
-    "current_version": "1.4.1",
+    "current_version": "1.5.0",
     "change_history": [
       {
         "version": "1.0.0",
@@ -165,6 +173,11 @@
         "version": "1.4.1",
         "date": "2026-09-16",
         "description": "Skill repair & NLM RAG synchronization: Ingested execution-level architecture and 10-class forensic error mapping matrix (docs/v140_execution_graph_and_mapping_matrix.md) into live NotebookLM workspace, registered execution_graph_matrix address point, and synced all global mirrors."
+      },
+      {
+        "version": "1.5.0",
+        "date": "2026-09-26",
+        "description": "Skill upgrade v1.5.0: Added visual governance Rule 9 (client_registry_domain_palette_grounding) and Error Class 11 (DefaultThemeFallbackViolationError). Prohibits invoking synthetic default design theme choices (#0F172A/#EAB308) when scaffolding redesign jobs from Microsoft Clarity database or client registry channel domains. Mandates direct extraction and grounding in client live domain Astra/Elementor tokens."
       }
     ]
   }

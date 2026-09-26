@@ -10,7 +10,7 @@ yarn-error.log*
 .env.production.local
 .DS_Store
 *.log
-
-node_modules/
 __pycache__/
 *.pyc
+screenshots/
+scripts/screenshots/

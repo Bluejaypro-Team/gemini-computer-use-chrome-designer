@@ -260,6 +260,7 @@ When adding content to structured repeating sections (such as Nested Accordions,
 5. **NEVER execute consecutive click actions** without capturing a stabilization screenshot (use `page.waitForLoadState('networkidle')`) in between.
 6. **NEVER click within the sidebar exclusion zone** (typically `x < 300px` in Elementor's default layout) during canvas operations.
 7. **NEVER rely on default paragraph text colors** (`#334155` / `#284C82`) over dark container overlays.
+8. **NEVER invoke or fall back to synthetic default design theme choices** (`#0F172A` / `#EAB308` or arbitrary luxury templates) when scaffolding redesigns from Microsoft Clarity database or client registry channel domains.
 
 ### 6.4 Detection & Purge Rule (Post-Action Visual Audit)
 
@@ -289,22 +290,23 @@ If any of the following defects are detected during the post-action visual audit
 | Audit responsive spacing (80/50/35 Protocol) | **Node A** | Visual screenshot comparison at different viewport sizes. |
 | Save/Publish changes | **Node B** | Native "Update" button via DOM selector for reliability. |
 
-### 6.6 v1.4.0 Declarative Governance (The 8 ENFORCED Rules)
+### 6.6 v1.5.0 Declarative Governance (The 9 ENFORCED Rules)
 
-All visual builder operations are wrapped by 8 active middleware interceptors:
+All visual builder operations are wrapped by 9 active middleware interceptors:
 
 1. **`html_injection_revocation` [ENFORCED]:** Never inject raw `<style>`, `<script>`, or arbitrary HTML code widgets. All elements must use native builder widgets.
 2. **`nested_component_repeater_protocol` [ENFORCED]:** When modifying repeating components, audit parent container model first and duplicate in-place via `$e.run('document/repeater/duplicate')` rather than dropping standalone widgets.
-3. **`color_contrast_and_accessibility` [ENFORCED]:** Text over dark overlays must be styled in pure white (`#FFFFFF`) with Gold accents (`#EAB308`) and semi-transparent shielding (`rgba(15, 23, 42, 0.7)`).
+3. **`color_contrast_and_accessibility` [ENFORCED]:** Text over dark overlays must be styled in pure white (`#FFFFFF`) with client-grounded accents and semi-transparent shielding (`rgba(15, 23, 42, 0.7)`).
 4. **`sidebar_exclusion_zone` [ENFORCED]:** Reject coordinate actions where `x < 300px` to prevent accidental sidebar drag-start events.
 5. **`dpi_normalization_gate` [ENFORCED]:** Query `window.devicePixelRatio` before every coordinate action and normalize coordinates when `dpr > 1.0`.
 6. **`domain_boundary_lock` [ENFORCED]:** Validate `page.url()` matches target domain before and after every Playwright CDP action.
 7. **`save_verification_protocol` [ENFORCED]:** End modification batches with explicit `$e.run('document/save/auto')` and verify HTTP response status.
 8. **`panel_selection_verification` [ENFORCED]:** Query active element ID prior to panel input to confirm alignment with target widget ID.
+9. **`client_registry_domain_palette_grounding` [ENFORCED]:** When scaffolding or executing any redesign job from Microsoft Clarity database or any client registry channel domain, the agent is strictly prohibited from invoking synthetic default design theme choices (such as generic Midnight Blue `#0F172A` and Gold `#EAB308`). All design tokens, button styles, accents, and surfaces must be extracted directly from the live domain Astra/Elementor CSS tokens (`--ast-global-color-*`).
 
 ---
 
-## 7. The 10 Forensic Error Classes & Runtime Recovery Protocols
+## 7. The 11 Forensic Error Classes & Runtime Recovery Protocols
 
 Derived from the 33-minute forensic deep-dive podcast (*"The Gemini designer agent logic failure"*) and forensic Briefing Doc analysis:
 
@@ -318,8 +320,9 @@ Derived from the 33-minute forensic deep-dive podcast (*"The Gemini designer age
 | **Error 6: Builder Panel State Desync** | **MEDIUM** | Previous click selected wrong element or panel state lagged behind canvas. | Typing or styling applies to unintended widget, causing silent content corruption. | Prior to panel mutation, verify currently selected ID: `elementor.selection.getElements()[0]?.id === targetId`. Re-select if mismatched. |
 | **Error 7: Unsaved Changes & Session Loss** | **MEDIUM** | Builder update fails silently due to network drop, nonce expiration, or timeout. | Modifications visible in editor preview are lost on page refresh or navigation. | Execute explicit save via `$e.run('document/save/auto')` or native Update button; verify console response code and persistence status. |
 | **Error 8: Multi-Tab Confusion** | **MEDIUM** | Multiple tabs open; agent connects to arbitrary `contexts[0].pages()[0]`. | Actions execute on wrong tab, staging site, or dashboard page. | Explicit URL verification: assert `page.url()` contains target domain and post ID before starting action sequence. |
-| **Error 9: Color Contrast Violation on Dark Overlays** | **MEDIUM** | Text or callout placed over dark containers (`#0F172A`, `#23497F`). | Text inherits default dark grey (`#334155`), failing WCAG 2.1 AA readability standards. | Audit container luminance: if dark, inject pure white text (`#FFFFFF`), Gold accents (`#EAB308`), and `rgba(15, 23, 42, 0.7)` backdrop shielding. |
+| **Error 9: Color Contrast Violation on Dark Overlays** | **MEDIUM** | Text or callout placed over dark containers (`#0F172A`, `#23497F`). | Text inherits default dark grey (`#334155`), failing WCAG 2.1 AA readability standards. | Audit container luminance: if dark, inject pure white text (`#FFFFFF`), client-grounded accents, and `rgba(15, 23, 42, 0.7)` backdrop shielding. |
 | **Error 10: Cross-Domain Boundary Violation** | **CRITICAL** | Agent clicks browser chrome, address bar, or external link. | Browser navigates off client domain into external site or settings. | Enforce domain boundary lock: assert URL origin matches expected host before and after every CDP command; raise `DomainBoundaryViolationError` immediately on divergence. |
+| **Error 11: Default Theme Fallback Violation** | **CRITICAL** | Redesign scaffolding job initiated from Clarity telemetry or client registry domain. | Agent attempts to invoke default synthetic theme choices (`#0F172A` / `#EAB308`) instead of the client's live brand palette. | **STRICTLY PROHIBITED**. Extract live domain tokens via CDP (`--ast-global-color-*`, `--e-global-color-*`); ground all buttons, cards, and text in the client's verified live palette. |
 
 ---
 

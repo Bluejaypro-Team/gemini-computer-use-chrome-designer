@@ -8,7 +8,7 @@ FROM python:3.10-slim-bookworm
 
 LABEL maintainer="Bluejaypro Visual Automation Architect"
 LABEL skill.name="gemini-computer-use-chrome-designer"
-LABEL skill.version="1.4.1"
+LABEL skill.version="1.5.0"
 
 # ── System dependencies ───────────────────────────────────────────────────
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
