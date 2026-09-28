@@ -1,10 +1,10 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
-  "description": "Expert persona and structured visual automation workflow for automating visual site design, builder page-building (Elementor, Gutenberg, Webflow), and responsive audits using Gemini multimodal visual models connected to Chrome DevTools Protocol (CDP). Features in-place nested component repeater duplication, 1250px signature grid enforcement, 80/50/35 spacing protocol, and zero raw HTML injection guardrails.",
+  "description": "Expert persona and structured visual automation workflow for automating visual site design, builder page-building (Elementor, Gutenberg, Webflow), and responsive audits using Gemini multimodal visual models connected to Chrome DevTools Protocol (CDP). Features brand-grounded redesign scaffolding, idempotent NotebookLM domain registry caching, in-place nested component repeater duplication, 1250px signature grid enforcement, 80/50/35 spacing protocol, and zero raw HTML injection guardrails.",
   "author": "Bluejaypro Visual Automation Architect",
   "category": "Visual Builder Automation & CRO Design Studio",
   "entrypoint": "scripts/visual_designer_cli.py",
@@ -14,6 +14,14 @@
     "python": ">=3.10",
     "os": ["windows", "linux", "darwin"]
   },
+  "subagents": {
+    "brand_grounded_redesign_architect": {
+      "name": "Brand-Grounded Redesign Architect Subagent",
+      "entrypoint": "scripts/brand_grounded_redesign_agent.py",
+      "cli_subcommand": "redesign-scaffold",
+      "description": "Autonomous subagent for pre-flight logo palette extraction, live typography harvesting, idempotent NotebookLM domain registry caching, and Clarity telemetry-driven responsive reflow."
+    }
+  },
   "address_points": {
     "specification": "SKILL.md",
     "manifest": "manifest.json",
@@ -21,6 +29,8 @@
     "global_manifest": "../.datacloud_skills_manifest",
     "cli_entrypoint": "scripts/visual_designer_cli.py",
     "execution_engine": "scripts/chrome_designer_agent.py",
+    "subagent_brand_grounded": "scripts/brand_grounded_redesign_agent.py",
+    "notebooklm_domain_registry": "notebooklm_domain_registry.json",
     "execution_graph_matrix": "docs/v140_execution_graph_and_mapping_matrix.md"
   },
   "cloud_runner_specification": {

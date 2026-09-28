@@ -31,8 +31,10 @@ from chrome_designer_agent import (
     DomainBoundaryViolationError,
     RogueWidgetDetectedError,
     PanelDesyncError,
-    UnsavedChangesError
+    UnsavedChangesError,
+    DefaultThemeFallbackViolationError
 )
+from brand_grounded_redesign_agent import BrandGroundedRedesignSubagent
 
 def build_parser():
     parser = argparse.ArgumentParser(
@@ -84,6 +86,14 @@ def build_parser():
     # real-case (End-to-End Pipeline)
     case_p = subparsers.add_parser("real-case", help="Execute real-world Burnette Construction ADU FAQ duplication pipeline")
     case_p.add_argument("--staging-url", default="https://burnet.elkgroveseocompany.com", help="Target staging WordPress root URL")
+
+    # redesign-scaffold (Autonomous Brand-Grounded Subagent)
+    scaffold_p = subparsers.add_parser("redesign-scaffold", help="Run brand-grounded redesign scaffold with Clarity telemetry & idempotent RAG")
+    scaffold_p.add_argument("--domain", required=True, help="Client canonical domain (e.g. burnetteco.com)")
+    scaffold_p.add_argument("--staging-subdomain", help="Staging sub-domain (e.g. burnet.elkgroveseocompany.com)")
+    scaffold_p.add_argument("--clarity-report", help="Path to Microsoft Clarity report or telemetry json")
+    scaffold_p.add_argument("--force-refresh", action="store_true", help="Force refresh NotebookLM RAG workspace instead of cache reuse")
+    scaffold_p.add_argument("--title", help="Custom title for NotebookLM project")
 
     return parser
 
@@ -166,8 +176,23 @@ def main():
             print("\n[REAL-WORLD CASE RESULT]:", json.dumps(result, indent=2))
             agent.disconnect()
 
+        elif args.command == "redesign-scaffold":
+            subagent = BrandGroundedRedesignSubagent(
+                domain=args.domain,
+                staging_subdomain=args.staging_subdomain,
+                cdp_url=args.cdp_url,
+                agent=agent
+            )
+            spec = subagent.scaffold_redesign_spec(
+                clarity_path=args.clarity_report,
+                project_title=args.title,
+                force_refresh_rag=args.force_refresh
+            )
+            print("\n[REDESIGN SCAFFOLD SPECIFICATION]:", json.dumps(spec, indent=2))
+
     except (SidebarExclusionViolationError, DomainBoundaryViolationError, 
-            RogueWidgetDetectedError, PanelDesyncError, UnsavedChangesError) as e:
+            RogueWidgetDetectedError, PanelDesyncError, UnsavedChangesError,
+            DefaultThemeFallbackViolationError) as e:
         print(f"\n[GOVERNANCE ERROR - {type(e).__name__}]: {e}", file=sys.stderr)
         sys.exit(2)
     except Exception as e:
