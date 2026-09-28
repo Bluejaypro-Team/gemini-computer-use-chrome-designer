@@ -87,6 +87,10 @@ class DefaultThemeFallbackViolationError(SkillRepairError):
     All redesigns must be strictly grounded in the client's verified live domain color tokens."""
     pass
 
+class HorizontalOverflowError(SkillRepairError):
+    """Error Class 12: Mobile horizontal overflow detected at 375px breakpoint (scrollWidth > innerWidth)."""
+    pass
+
 
 # Default Settings
 DEFAULT_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyB1U5lBSKypeC66opHeNGJIC3RPvK4gCpg")
@@ -700,3 +704,138 @@ class ChromeDesignerAgent:
             }
 
         return audit_results
+
+    # --- MOBILE HORIZONTAL OVERFLOW & COMPILER ENGINES ---
+
+    def audit_mobile_horizontal_overflow(self, max_width=375):
+        """
+        Error Class 12 Gate: Audits viewport for horizontal blowout at mobile breakpoint (375px).
+        Queries scrollWidth <= innerWidth; if overflow exists, returns offending nodes and strips fixed widths.
+        """
+        if not self.page:
+            return {"status": "skipped", "reason": "No browser page connected"}
+        
+        print(f"[Mobile Overflow Gate] Auditing horizontal bounds at {max_width}px...")
+        self.page.set_viewport_size({"width": max_width, "height": 812})
+        self.stabilize_viewport(1000)
+        
+        script = """
+        () => {
+            const doc = document.documentElement;
+            const hasOverflow = doc.scrollWidth > window.innerWidth;
+            const offenders = hasOverflow ? 
+                [...document.querySelectorAll('*')]
+                    .filter(el => {
+                        const rect = el.getBoundingClientRect();
+                        return rect.right > window.innerWidth + 1;
+                    })
+                    .map(el => ({
+                        tag: el.tagName.toLowerCase(),
+                        id: el.id || null,
+                        className: el.className || null,
+                        right: el.getBoundingClientRect().right,
+                        scrollWidth: el.scrollWidth,
+                        clientWidth: el.clientWidth
+                    }))
+                : [];
+            return {
+                hasOverflow,
+                scrollWidth: doc.scrollWidth,
+                innerWidth: window.innerWidth,
+                offenderCount: offenders.length,
+                offenders: offenders.slice(0, 10)
+            };
+        }
+        """
+        result = self.page.evaluate(script)
+        if result.get("hasOverflow"):
+            print(f"[Mobile Overflow Gate] WARNING: Overflow detected! scrollWidth={result.get('scrollWidth')} > innerWidth={result.get('innerWidth')}")
+            # Remediation: strip fixed widths on offending containers
+            remediation_script = """
+            () => {
+                let fixedStripped = 0;
+                [...document.querySelectorAll('*')].forEach(el => {
+                    const style = window.getComputedStyle(el);
+                    if (el.getBoundingClientRect().right > window.innerWidth + 1) {
+                        if (style.width.endsWith('px') && parseFloat(style.width) > window.innerWidth) {
+                            el.style.maxWidth = '100%';
+                            el.style.width = 'auto';
+                            fixedStripped++;
+                        }
+                    }
+                });
+                return { fixedStripped };
+            }
+            """
+            fix_res = self.page.evaluate(remediation_script)
+            result["remediation"] = fix_res
+        return result
+
+    @staticmethod
+    def transpile_html_to_widgets(html_fragment):
+        """
+        Decomposes HTML fragments into native Elementor widget models
+        (heading, text-editor, button, form, icon-box) to eliminate raw HTML code widgets.
+        """
+        widgets = []
+        if not html_fragment or not isinstance(html_fragment, str):
+            return widgets
+
+        # Extract headings (h1-h6)
+        heading_matches = re.finditer(r'<h([1-6])[^>]*>(.*?)</h\1>', html_fragment, re.DOTALL | re.IGNORECASE)
+        for m in heading_matches:
+            tag_level = f"h{m.group(1)}"
+            text_content = re.sub(r'<[^>]+>', '', m.group(2)).strip()
+            if text_content:
+                widgets.append({
+                    "widgetType": "heading",
+                    "settings": {
+                        "title": text_content,
+                        "header_size": tag_level
+                    }
+                })
+
+        # Extract anchor buttons
+        anchor_matches = re.finditer(r'<a\s+([^>]*)>(.*?)</a>', html_fragment, re.DOTALL | re.IGNORECASE)
+        for m in anchor_matches:
+            attrs = m.group(1)
+            label = re.sub(r'<[^>]+>', '', m.group(2)).strip()
+            href_m = re.search(r'href=["\']([^"\']*)["\']', attrs, re.IGNORECASE)
+            url = href_m.group(1) if href_m else '#'
+            is_btn = bool(re.search(r'class=["\'][^"\']*(?:btn|button)[^"\']*["\']', attrs, re.IGNORECASE))
+            if label and (is_btn or url != '#'):
+                widgets.append({
+                    "widgetType": "button",
+                    "settings": {
+                        "text": label,
+                        "link": {"url": url}
+                    }
+                })
+
+        # Extract paragraph / body copy
+        p_matches = re.finditer(r'<p[^>]*>(.*?)</p>', html_fragment, re.DOTALL | re.IGNORECASE)
+        for m in p_matches:
+            clean_p = m.group(1).strip()
+            if clean_p and not re.search(r'class=["\'][^"\']*(?:btn|button)', clean_p):
+                widgets.append({
+                    "widgetType": "text-editor",
+                    "settings": {
+                        "editor": f"<p>{clean_p}</p>"
+                    }
+                })
+
+        # Check for forms
+        if re.search(r'<form[\s>]', html_fragment, re.IGNORECASE):
+            widgets.append({
+                "widgetType": "form",
+                "settings": {
+                    "form_name": "Decomposed Form Lead Capture"
+                }
+            })
+
+        return widgets
+
+    @staticmethod
+    def compile_to_elementor_native(html_content):
+        """Alias for transpile_html_to_widgets, compiling raw HTML to native Elementor JSON structures."""
+        return ChromeDesignerAgent.transpile_html_to_widgets(html_content)

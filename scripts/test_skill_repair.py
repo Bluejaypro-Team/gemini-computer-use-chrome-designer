@@ -96,7 +96,7 @@ def run_tests():
     with open(manifest_path, "r", encoding="utf-8") as f:
         manifest = json.load(f)
 
-    if manifest.get("version") in ["1.4.0", "1.4.1"] and manifest.get("status") == "installed" and manifest.get("error") is None:
+    if manifest.get("version") in ["1.4.0", "1.4.1", "1.5.0", "1.6.0", "1.6.1", "1.7.0"] and manifest.get("status") == "installed" and manifest.get("error") is None:
         print(f"PASS: Test 6 - Manifest metadata valid (version={manifest.get('version')}, status=installed, error=null)")
         passed += 1
     else:
@@ -148,11 +148,11 @@ def run_tests():
     else:
         print(f"FAIL: Test 9 - Mirror sync incomplete: agents={m_agents_ok}, skills={m_skills_ok}, scratch={m_scratch_ok}")
 
-    # TEST 10: 10 Error Classes Defined in Manifest Taxonomy
+    # TEST 10: Forensic Error Classes Defined in Manifest Taxonomy
     total += 1
     taxonomy = manifest.get("forensic_error_handling_taxonomy", {})
-    if len(taxonomy) == 10:
-        print("PASS: Test 10 - All 10 Forensic Error Classes defined in manifest taxonomy")
+    if len(taxonomy) >= 10 and all(f"error_{i}" in taxonomy for i in range(1, 11)):
+        print(f"PASS: Test 10 - All {len(taxonomy)} Forensic Error Classes defined in manifest taxonomy")
         passed += 1
     else:
         print(f"FAIL: Test 10 - Taxonomy missing error classes: found {len(taxonomy)}")
@@ -171,12 +171,12 @@ def run_tests():
     else:
         print(f"FAIL: Test 11 - Missing required flags in GCLOUD_CHROME_ARGS: {GCLOUD_CHROME_ARGS}")
 
-    # TEST 12: 8 Declarative ENFORCED Governance Rules in manifest
+    # TEST 12: Declarative ENFORCED Governance Rules in manifest
     total += 1
     rules = manifest.get("visual_governance_rules", {})
-    all_enforced = len(rules) == 8 and all(r.get("status") == "ENFORCED" for r in rules.values())
+    all_enforced = len(rules) >= 8 and all(r.get("status") == "ENFORCED" for r in rules.values())
     if all_enforced:
-        print("PASS: Test 12 - All 8 declarative visual governance rules configured with status=ENFORCED")
+        print(f"PASS: Test 12 - All {len(rules)} declarative visual governance rules configured with status=ENFORCED")
         passed += 1
     else:
         print(f"FAIL: Test 12 - Declarative rules incomplete: {rules}")
@@ -201,6 +201,28 @@ def run_tests():
         passed += 1
     else:
         print(f"FAIL: Test 14 - Execution graph matrix check failed: exists={doc_path.exists()}, status={nlm_source.get('source_ingestion_status')}")
+
+    # TEST 15: Mobile Horizontal Overflow Error Class & Audit Method (Error 12)
+    total += 1
+    from chrome_designer_agent import HorizontalOverflowError
+    if hasattr(agent, "audit_mobile_horizontal_overflow") and issubclass(HorizontalOverflowError, Exception):
+        print("PASS: Test 15 - Error Class 12 (HorizontalOverflowError) and audit_mobile_horizontal_overflow verified")
+        passed += 1
+    else:
+        print("FAIL: Test 15 - HorizontalOverflowError or audit_mobile_horizontal_overflow missing")
+
+    # TEST 16: Automated HTML-to-Native-Widgets Transpiler / Compiler
+    total += 1
+    if hasattr(ChromeDesignerAgent, "transpile_html_to_widgets") and hasattr(ChromeDesignerAgent, "compile_to_elementor_native"):
+        sample_html = "<h2>Title</h2><p>Body copy</p><a class='btn' href='#test'>Click</a>"
+        transpiled = ChromeDesignerAgent.compile_to_elementor_native(sample_html)
+        if len(transpiled) == 3 and transpiled[0]["widgetType"] == "heading":
+            print(f"PASS: Test 16 - Native Elementor Transpiler compiled {len(transpiled)} native widgets from HTML")
+            passed += 1
+        else:
+            print(f"FAIL: Test 16 - Transpiler output unexpected: {transpiled}")
+    else:
+        print("FAIL: Test 16 - Transpiler / compiler methods missing on ChromeDesignerAgent")
 
     print("=" * 65)
     print(f"TEST RESULTS: {passed}/{total} PASSED (100% SUCCESS)")

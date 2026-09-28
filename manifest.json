@@ -1,6 +1,6 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
@@ -96,6 +96,14 @@
     "client_registry_domain_palette_grounding": {
       "status": "ENFORCED",
       "policy": "When scaffolding or executing a redesign job from Microsoft Clarity database or any client registry channel domain, the agent is strictly prohibited from invoking synthetic default design theme choices (such as generic Midnight Blue #0F172A and Gold #EAB308). All design tokens, button styles, accents, and surfaces must be extracted directly from the live domain Astra/Elementor CSS tokens (--ast-global-color-*)."
+    },
+    "signature_grid_and_spacing_rhythm": {
+      "status": "ENFORCED",
+      "policy": "Mandate 1250px container bounds (max-width: 1250px; margin: 0 auto;) and enforce the 80/50/35 spacing rhythm across Desktop (>= 1250px: 80px), Tablet (768px-1024px: 50px), and Mobile (< 768px: 35px) padding top/bottom."
+    },
+    "mobile_horizontal_overflow_gate": {
+      "status": "ENFORCED",
+      "policy": "Audit scrollWidth <= innerWidth at 375px mobile breakpoint; identify offending elements with getBoundingClientRect().right > window.innerWidth and automatically strip fixed pixel widths prior to publishing."
     }
   },
   "forensic_error_handling_taxonomy": {
@@ -109,7 +117,8 @@
     "error_8": { "name": "Multi-Tab Confusion", "severity": "MEDIUM", "mitigation": "Target page/post URL assertion on connection" },
     "error_9": { "name": "Color Contrast Violation on Dark Overlays", "severity": "MEDIUM", "mitigation": "Luminance-adaptive WCAG 2.1 AA token injection using client live palette (--ast-global-color-*), zero synthetic dark overlays" },
     "error_10": { "name": "Cross-Domain Safety Boundary Violation", "severity": "CRITICAL", "mitigation": "Domain boundary lock with DomainBoundaryViolationError" },
-    "error_11": { "name": "Default Theme Fallback Violation", "severity": "CRITICAL", "mitigation": "Strict live domain CSS token extraction via CDP before scaffolding; prohibition of synthetic default theme (#0F172A/#EAB308) fallbacks on client registry domains" }
+    "error_11": { "name": "Default Theme Fallback Violation", "severity": "CRITICAL", "mitigation": "Strict live domain CSS token extraction via CDP before scaffolding; prohibition of synthetic default theme (#0F172A/#EAB308) fallbacks on client registry domains" },
+    "error_12": { "name": "Mobile Horizontal Overflow Violation", "severity": "HIGH", "mitigation": "Mobile overflow detection gate at 375px; convert fixed pixel widths to fluid max-width: 100% and reset unmanaged margins" }
   },
   "enforcement_rules": {
     "core_rules": [
@@ -147,7 +156,7 @@
     }
   },
   "semver_tracking": {
-    "current_version": "1.6.1",
+    "current_version": "1.7.0",
     "change_history": [
       {
         "version": "1.0.0",
@@ -193,6 +202,11 @@
         "version": "1.6.1",
         "date": "2026-09-29",
         "description": "Skill repair v1.6.1: Surgical remediation of Rule 3 (color_contrast_and_accessibility) and Error 9. Purged hardcoded synthetic dark shielding rgba(15, 23, 42, 0.7) (#0F172A) and synthetic Gold (#EAB308). Enforced Luminance-Adaptive WCAG 2.1 AA token hierarchy derived strictly from client live CSS tokens (--ast-global-color-*)."
+      },
+      {
+        "version": "1.7.0",
+        "date": "2026-09-29",
+        "description": "Skill upgrade v1.7.0: Codified signature_grid_and_spacing_rhythm and mobile_horizontal_overflow_gate in visual_governance_rules (11 enforced rules). Added Error Class 12 (HorizontalOverflowError) and implemented audit_mobile_horizontal_overflow() and transpile_html_to_widgets() / compile_to_elementor_native() in chrome_designer_agent.py. Synchronized test_skill_repair.py and global mirrors."
       }
     ]
   }
