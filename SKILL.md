@@ -181,9 +181,10 @@ When adding content to structured repeating sections (such as Nested Accordions,
 4. **Content Ingestion & Styling Inheritance**:
    - Update only the inner title and nested container content of the newly duplicated item.
    - This guarantees 100% inheritance of parent typography, hover states, border-radius, active transitions, and responsive padding without CSS overrides.
-5. **Color Contrast & Dark Overlay Accessibility Guardrail**:
-   - When placing text, links, or methodology callouts over dark container overlays (e.g., Navy `#0F172A` / `#23497F`), never inherit default dark paragraph text (`#334155`).
-   - Explicitly style typography in pure white (`#FFFFFF`) with high-contrast Gold accents (`#EAB308`) and semi-transparent container shielding (`rgba(15, 23, 42, 0.7)`).
+5. **Color Contrast & Luminance-Adaptive Accessibility Guardrail**:
+   - Contrast must be achieved strictly using the client's live Astra/Elementor CSS token hierarchy.
+   - If container luminance L < 0.5 (dark/media), bind text to client light tokens (`--ast-global-color-5` / `#FFFFFF`) with client-grounded secondary accents (`--ast-global-color-4`). If L >= 0.5 (light surface), bind text to client dark tokens (`--ast-global-color-2` / `#1E293B`).
+   - Strictly prohibit hardcoded synthetic dark shielding (`rgba(15, 23, 42, *)`) and synthetic Gold (`#EAB308`).
 
 
 ---
@@ -229,11 +230,11 @@ When adding content to structured repeating sections (such as Nested Accordions,
    - Alternatively, trigger the native duplicate icon: `.elementor-repeater-tool-duplicate`
    - This guarantees 100% styling inheritance for typography, background tokens (`#F0F4F9`), hover states, active transitions (`#003B73` navy), border-radius (`8px`), and keyboard tab order.
 
-3. **Accessibility Shielding (Dark Overlay Text):**
-   - When placing text, links, or methodology callouts over dark container overlays (Navy `#0F172A` / `#23497F`), ALWAYS:
-     - Style text in pure white (`#FFFFFF`)
-     - Add Gold accents (`#EAB308`)
-     - Apply semi-transparent container shielding: `rgba(15, 23, 42, 0.7)`
+3. **Accessibility Shielding (Luminance-Adaptive Contrast):**
+   - When placing text over media or dark containers, ALWAYS:
+     - Style text using client light tokens (`--ast-global-color-5` / `#FFFFFF`)
+     - Inherit client secondary accents (`--ast-global-color-4`)
+     - Apply neutral alpha shielding (`rgba(0, 0, 0, 0.65)`) only if needed, never synthetic `#0F172A`
 
 4. **Save Verification Protocol:**
    - After every modification batch, explicitly trigger save: `$e.run('document/save/auto')`
@@ -296,7 +297,7 @@ All visual builder operations are wrapped by 9 active middleware interceptors:
 
 1. **`html_injection_revocation` [ENFORCED]:** Never inject raw `<style>`, `<script>`, or arbitrary HTML code widgets. All elements must use native builder widgets.
 2. **`nested_component_repeater_protocol` [ENFORCED]:** When modifying repeating components, audit parent container model first and duplicate in-place via `$e.run('document/repeater/duplicate')` rather than dropping standalone widgets.
-3. **`color_contrast_and_accessibility` [ENFORCED]:** Text over dark overlays must be styled in pure white (`#FFFFFF`) with client-grounded accents and semi-transparent shielding (`rgba(15, 23, 42, 0.7)`).
+3. **`color_contrast_and_accessibility` [ENFORCED]:** Luminance-Adaptive WCAG 2.1 AA Enforcement: Contrast must be achieved strictly using the client's live Astra/Elementor CSS token hierarchy. If container luminance L < 0.5 (dark/media), bind text to client light tokens (`--ast-global-color-5` / `#FFFFFF`) with client-grounded secondary accents (`--ast-global-color-4`). If L >= 0.5 (light surface), bind text to client dark tokens (`--ast-global-color-2` / `#1E293B`). Prohibit hardcoded synthetic dark shielding (`rgba(15, 23, 42, *)`) and synthetic Gold (`#EAB308`).
 4. **`sidebar_exclusion_zone` [ENFORCED]:** Reject coordinate actions where `x < 300px` to prevent accidental sidebar drag-start events.
 5. **`dpi_normalization_gate` [ENFORCED]:** Query `window.devicePixelRatio` before every coordinate action and normalize coordinates when `dpr > 1.0`.
 6. **`domain_boundary_lock` [ENFORCED]:** Validate `page.url()` matches target domain before and after every Playwright CDP action.
@@ -320,7 +321,7 @@ Derived from the 33-minute forensic deep-dive podcast (*"The Gemini designer age
 | **Error 6: Builder Panel State Desync** | **MEDIUM** | Previous click selected wrong element or panel state lagged behind canvas. | Typing or styling applies to unintended widget, causing silent content corruption. | Prior to panel mutation, verify currently selected ID: `elementor.selection.getElements()[0]?.id === targetId`. Re-select if mismatched. |
 | **Error 7: Unsaved Changes & Session Loss** | **MEDIUM** | Builder update fails silently due to network drop, nonce expiration, or timeout. | Modifications visible in editor preview are lost on page refresh or navigation. | Execute explicit save via `$e.run('document/save/auto')` or native Update button; verify console response code and persistence status. |
 | **Error 8: Multi-Tab Confusion** | **MEDIUM** | Multiple tabs open; agent connects to arbitrary `contexts[0].pages()[0]`. | Actions execute on wrong tab, staging site, or dashboard page. | Explicit URL verification: assert `page.url()` contains target domain and post ID before starting action sequence. |
-| **Error 9: Color Contrast Violation on Dark Overlays** | **MEDIUM** | Text or callout placed over dark containers (`#0F172A`, `#23497F`). | Text inherits default dark grey (`#334155`), failing WCAG 2.1 AA readability standards. | Audit container luminance: if dark, inject pure white text (`#FFFFFF`), client-grounded accents, and `rgba(15, 23, 42, 0.7)` backdrop shielding. |
+| **Error 9: Color Contrast Violation on Dark Overlays** | **MEDIUM** | Text placed over containers fails WCAG 2.1 AA contrast ratio (< 4.5:1). | Text fails readability against container surface. | Audit container luminance: if dark, inject client light tokens (`--ast-global-color-5`), client accents (`--ast-global-color-4`), and neutral alpha shielding (`rgba(0, 0, 0, 0.65)`). If light, bind text to client dark tokens (`--ast-global-color-2`). |
 | **Error 10: Cross-Domain Boundary Violation** | **CRITICAL** | Agent clicks browser chrome, address bar, or external link. | Browser navigates off client domain into external site or settings. | Enforce domain boundary lock: assert URL origin matches expected host before and after every CDP command; raise `DomainBoundaryViolationError` immediately on divergence. |
 | **Error 11: Default Theme Fallback Violation** | **CRITICAL** | Redesign scaffolding job initiated from Clarity telemetry or client registry domain. | Agent attempts to invoke default synthetic theme choices (`#0F172A` / `#EAB308`) instead of the client's live brand palette. | **STRICTLY PROHIBITED**. Extract live domain tokens via CDP (`--ast-global-color-*`, `--e-global-color-*`); ground all buttons, cards, and text in the client's verified live palette. |
 
@@ -336,7 +337,7 @@ flowchart TD
         A["Start Automation Request"] --> B["assert_domain_boundary()"]
         B -- "Mismatch" --> B1["Switch Context Tab or Raise DomainBoundaryViolationError"]
         B -- "Verified Host" --> C["apply_styling_guardrail()"]
-        C -- "Dark Overlay Detected" --> C1["Force White #FFFFFF + Gold #EAB308 + rgba(15,23,42,0.7)"]
+        C -- "Dark Overlay Detected" --> C1["Apply Client Light Token --ast-global-color-5 + Client Accent"]
         C -- "Standard Container" --> D["Proceed to Viewport"]
     end
 

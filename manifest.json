@@ -1,6 +1,6 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
@@ -71,7 +71,7 @@
     },
     "color_contrast_and_accessibility": {
       "status": "ENFORCED",
-      "policy": "Text over dark overlays must be styled in pure white (#FFFFFF) with client-grounded accents and semi-transparent shielding (rgba(15, 23, 42, 0.7))."
+      "policy": "Luminance-Adaptive WCAG 2.1 AA Enforcement: Contrast must be achieved strictly using the client's live Astra/Elementor CSS token hierarchy. If container luminance L < 0.5 (dark/media), bind text to client light tokens (--ast-global-color-5 / #FFFFFF) with client-grounded secondary accents (--ast-global-color-4). If L >= 0.5 (light surface), bind text to client dark tokens (--ast-global-color-2 / #1E293B). Prohibit hardcoded synthetic dark shielding and ungrounded theme accents."
     },
     "sidebar_exclusion_zone": {
       "status": "ENFORCED",
@@ -107,7 +107,7 @@
     "error_6": { "name": "Builder Panel State Desync", "severity": "MEDIUM", "mitigation": "Selection ID verification before panel mutations" },
     "error_7": { "name": "Unsaved Changes & Session Loss", "severity": "MEDIUM", "mitigation": "Explicit save trigger and console verification" },
     "error_8": { "name": "Multi-Tab Confusion", "severity": "MEDIUM", "mitigation": "Target page/post URL assertion on connection" },
-    "error_9": { "name": "Color Contrast Violation on Dark Overlays", "severity": "MEDIUM", "mitigation": "WCAG 2.1 AA token injection (#FFFFFF, client-grounded accents, rgba shielding)" },
+    "error_9": { "name": "Color Contrast Violation on Dark Overlays", "severity": "MEDIUM", "mitigation": "Luminance-adaptive WCAG 2.1 AA token injection using client live palette (--ast-global-color-*), zero synthetic dark overlays" },
     "error_10": { "name": "Cross-Domain Safety Boundary Violation", "severity": "CRITICAL", "mitigation": "Domain boundary lock with DomainBoundaryViolationError" },
     "error_11": { "name": "Default Theme Fallback Violation", "severity": "CRITICAL", "mitigation": "Strict live domain CSS token extraction via CDP before scaffolding; prohibition of synthetic default theme (#0F172A/#EAB308) fallbacks on client registry domains" }
   },
@@ -121,7 +121,7 @@
     "dos": [
       "Pre-Audit Requirement: Force a DOM lookup step before taking layout actions (prevents No DOM Pre-Audit Protocol).",
       "Duplication Protocol: Mandate using Elementor's native duplicate command (.elementor-repeater-tool-duplicate) to guarantee styling inheritance for typography, background tokens, hover states, and keyboard tab order.",
-      "Accessibility Shielding: Require pure white text (#FFFFFF) with semi-transparent overlays (rgba(15, 23, 42, 0.7)) for text layered over dark containers.",
+      "Accessibility Shielding: Enforce luminance-adaptive WCAG 2.1 AA contrast using client-grounded CSS tokens (--ast-global-color-*); strictly prohibit hardcoded synthetic dark shielding and ungrounded theme accents.",
       "Save Verification: After every modification batch, trigger $e.run('document/save/auto') and verify response.",
       "Domain Boundary Lock: Assert page.url() matches target domain before and after every action.",
       "DPI Normalization: Query devicePixelRatio and divide coordinates when dpr !== 1.0.",
@@ -147,7 +147,7 @@
     }
   },
   "semver_tracking": {
-    "current_version": "1.5.0",
+    "current_version": "1.6.1",
     "change_history": [
       {
         "version": "1.0.0",
@@ -188,6 +188,11 @@
         "version": "1.5.0",
         "date": "2026-09-26",
         "description": "Skill upgrade v1.5.0: Added visual governance Rule 9 (client_registry_domain_palette_grounding) and Error Class 11 (DefaultThemeFallbackViolationError). Prohibits invoking synthetic default design theme choices (#0F172A/#EAB308) when scaffolding redesign jobs from Microsoft Clarity database or client registry channel domains. Mandates direct extraction and grounding in client live domain Astra/Elementor tokens."
+      },
+      {
+        "version": "1.6.1",
+        "date": "2026-09-29",
+        "description": "Skill repair v1.6.1: Surgical remediation of Rule 3 (color_contrast_and_accessibility) and Error 9. Purged hardcoded synthetic dark shielding rgba(15, 23, 42, 0.7) (#0F172A) and synthetic Gold (#EAB308). Enforced Luminance-Adaptive WCAG 2.1 AA token hierarchy derived strictly from client live CSS tokens (--ast-global-color-*)."
       }
     ]
   }

@@ -173,7 +173,7 @@ def evaluate_node_b_implementation():
     rules_in_skill = [
         "html_injection_revocation (Never inject raw <style>, <script>, or arbitrary HTML code widgets)",
         "nested_component_repeater_protocol (Audit parent container model, duplicate in-place via $e.run)",
-        "color_contrast_and_accessibility (Force white #FFFFFF + gold #EAB308 over dark overlays)",
+        "color_contrast_and_accessibility (Luminance-adaptive WCAG 2.1 AA token hierarchy derived strictly from client live CSS tokens)",
         "sidebar_exclusion_zone (Reject coordinates x < 300px)",
         "dpi_normalization_gate (Normalize coordinates with window.devicePixelRatio)",
         "domain_boundary_lock (Verify target host before and after every action)",
@@ -250,12 +250,20 @@ def evaluate_node_b_implementation():
     print(f"  -> manifest.json has Error 11 ('Default Theme Fallback Violation'): {manifest_has_err11}")
     print(f"  -> manifest.json version: {manifest_version}")
 
+    # 4d. Verify Rule 3 & Error 9 do not smuggle synthetic colors (#0F172A / #EAB308 / rgba(15, 23, 42))
+    rule_3_policy = manifest_data.get("visual_governance_rules", {}).get("color_contrast_and_accessibility", {}).get("policy", "")
+    assert "rgba(15, 23, 42" not in rule_3_policy, "Rule 3 Failure: Synthetic dark shielding rgba(15, 23, 42) found in policy!"
+    assert "#0F172A" not in rule_3_policy, "Rule 3 Failure: Synthetic #0F172A found in policy!"
+    assert "rgba(15, 23, 42" not in agent_code, "Agent Code Failure: Synthetic rgba(15, 23, 42) found in chrome_designer_agent.py!"
+    print("  -> Rule 3 & Error 9 Contrast Remediation: PASSED (Zero synthetic theme smuggling detected)")
+
     results["node_b_rule_compliance"]["rule_9_palette_grounding"] = {
         "synthetic_blocked": blocked_synthetic,
         "grounded_passed": passed_grounded,
         "manifest_rule_9_present": manifest_has_rule9,
         "manifest_error_11_present": manifest_has_err11,
-        "manifest_version": manifest_version
+        "manifest_version": manifest_version,
+        "rule_3_synthetic_free": True
     }
 
     # -------------------------------------------------------------

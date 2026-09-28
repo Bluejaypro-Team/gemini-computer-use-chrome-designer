@@ -108,7 +108,7 @@ The v1.4.0 engine establishes dedicated programmatic exception classes and runti
 | **Class 6** | **MEDIUM** | `HorizontalOverflowError` | Content or nested container widths exceed viewport boundary at 375px mobile breakpoint (`scrollWidth > innerWidth`). | Query `document.documentElement.scrollWidth > window.innerWidth`; identify failing nodes via `getBoundingClientRect().right > innerWidth`; strip fixed pixel widths. |
 | **Class 7** | **HIGH** | `SilentSaveFailureError` | Agent clicks the "Update"/"Publish" button but leaves before the async AJAX request completes, losing all canvas edits. | Intercept HTTP POST to `admin-ajax.php?action=elementor_ajax`; await `.elementor-button-state-success`; enforce 15,000ms timeout with retry. |
 | **Class 8** | **HIGH** | `SharedMemoryExhaustionError` | Headless Chrome runs on containerized Linux VMs without `/dev/shm` partition enlargement, triggering `SIGBUS` crashes. | Pass `--disable-dev-shm-usage`, `--no-sandbox`, and `--disable-setuid-sandbox` on all cloud VM browser launches. |
-| **Class 9** | **HIGH** | `ContrastDefectError` | Text placed over dark hero overlays or background images fails WCAG 2.1 AA contrast ratio (< 4.5:1 for body, < 3:1 for headings). | Enforce dark backdrop overlay (`rgba(15, 23, 42, 0.75)` to `0.88`); lock typography to pure white (`#FFFFFF`) with Gold accents (`#EAB308`). |
+| **Class 9** | **HIGH** | `ContrastDefectError` | Text placed over hero overlays or containers fails WCAG 2.1 AA contrast ratio (< 4.5:1 for body, < 3:1 for headings). | Enforce luminance-adaptive contrast: if dark, bind typography to client light token (`--ast-global-color-5` / `#FFFFFF`) with client secondary accent (`--ast-global-color-4`) and neutral shielding `rgba(0,0,0,0.65)`. If light, bind to client dark token (`--ast-global-color-2`). Prohibit synthetic `#0F172A`/`#EAB308`. |
 | **Class 10**| **MEDIUM** | `CrossDomainNavigationError`| Accidental click on an external link or unconstrained redirect navigates away from the target WordPress staging environment. | Assert `window.location.origin` equality before and after every navigation action. Reject navigation outside approved domain whitelist. |
 
 ---
@@ -131,10 +131,10 @@ The v1.4.0 engine establishes dedicated programmatic exception classes and runti
   - Query container engine (Flexbox Container vs Section).
   - Lock container to **1250px Signature Grid** (`max-width: 1250px; margin: 0 auto;`).
   - Height set to `80vh`.
-  - Apply background image with **Mandatory Contrast Shielding**:
-    `linear-gradient(180deg, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.88) 100%)`.
-  - Heading: Montserrat 600, color `#FFFFFF` (Contrast Ratio $\ge 7.0:1$).
-  - Button: Gold `#EAB308`, text `#0F172A`, 0.3s hover transition.
+  - Apply background image with **Client-Grounded Contrast Shielding**:
+    `linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.80) 100%)` (neutral alpha, zero synthetic obsidian).
+  - Heading: Montserrat 600, color `--ast-global-color-5` / `#FFFFFF` (Contrast Ratio $\ge 7.0:1$).
+  - Button: Client Accent (`--ast-global-color-4`), text on accent, 0.3s hover transition.
 
 ### Step 3: Core Sections Ingestion via In-Place Duplication
 - **Target**: Services Grid, Testimonials, About, and Contact Form.

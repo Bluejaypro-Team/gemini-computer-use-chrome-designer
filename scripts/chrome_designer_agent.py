@@ -296,16 +296,25 @@ class ChromeDesignerAgent:
                 const container = window.elementor.getContainer('{widget_id}');
                 if (!container) return {{ success: false, error: 'Widget container not found' }};
                 
+                // Dynamically inherit client-grounded tokens from live theme root
+                const rootStyles = window.getComputedStyle(document.documentElement);
+                const clientLightText = rootStyles.getPropertyValue('--ast-global-color-5').trim() || '#FFFFFF';
+                const clientAccent = rootStyles.getPropertyValue('--ast-global-color-4').trim() || 
+                                     rootStyles.getPropertyValue('--e-global-color-accent').trim() || '#F4A313';
+                
+                // Never inject synthetic #0F172A; use neutral alpha shielding if overlay is required
+                const neutralShielding = 'rgba(0, 0, 0, 0.65)';
+                
                 window.$e.run('document/elements/settings', {{
                     container: container,
                     settings: {{
-                        title_color: '#FFFFFF',
-                        text_color: '#FFFFFF',
-                        accent_color: '#EAB308',
-                        background_color: 'rgba(15, 23, 42, 0.7)'
+                        title_color: clientLightText,
+                        text_color: clientLightText,
+                        accent_color: clientAccent,
+                        background_color: neutralShielding
                     }}
                 }});
-                return {{ success: true, tokens_applied: ['#FFFFFF', '#EAB308', 'rgba(15,23,42,0.7)'] }};
+                return {{ success: true, tokens_applied: [clientLightText, clientAccent, neutralShielding] }};
             }} catch(e) {{
                 return {{ success: false, error: String(e) }};
             }}
