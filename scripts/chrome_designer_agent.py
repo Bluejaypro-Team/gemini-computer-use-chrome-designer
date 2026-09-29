@@ -196,14 +196,29 @@ class ChromeDesignerAgent:
     def evaluate_stage_7_execution(self, resume_requested=False):
         """
         Stage 7 Lifecycle Gate:
-        Pauses post-deploy continuous telemetry feedback loop and keeps it aside
-        from core execution matrices (Stages 1-6) as long as user does not explicitly resume.
+        Evaluates Stage 7 (Continuous Telemetry Feedback Loop & Workpool Orchestration).
+        BigQuery preserves all database telemetry continuously across daily cron executions (0 2 * * *),
+        and Looker Studio natively visualizes BigQuery views without requiring ad-hoc manual invocation.
+        However, the active agentic workpool loop and autonomous redesign mutations remain in PAUSED_STANDBY
+        aside from core matrices (Stages 1-6) until explicit user resumption ('Green Signal').
         """
         if not resume_requested and self.stage_7_status == "PAUSED_STANDBY":
-            print("[Stage 7 Gate] Stage 7 (Continuous Telemetry Feedback Loop) is currently PAUSED_STANDBY per user directive. Bypassing post-deploy cron/Looker sync.")
-            return {"status": "PAUSED_STANDBY", "bypassed": True, "resumption_required": True}
-        print("[Stage 7 Gate] Resuming Stage 7 telemetry synchronization.")
-        return {"status": "ACTIVE_RESUMED", "bypassed": False}
+            print("[Stage 7 Gate] Stage 7 active agentic loop is in PAUSED_STANDBY. BigQuery daily cron preserves telemetry lakehouse; autonomous agentic mutation loop remains paused until explicit user green signal.")
+            return {
+                "status": "PAUSED_STANDBY",
+                "bypassed": True,
+                "bigquery_lakehouse_active": True,
+                "daily_cron_schedule": "0 2 * * *",
+                "looker_studio_mode": "NATIVE_BIGQUERY_VIEW",
+                "resumption_required": True
+            }
+        print("[Stage 7 Gate] Green signal detected. Resuming Stage 7 active agentic telemetry orchestration.")
+        return {
+            "status": "ACTIVE_RESUMED",
+            "bypassed": False,
+            "bigquery_lakehouse_active": True,
+            "looker_studio_mode": "NATIVE_BIGQUERY_VIEW"
+        }
 
     # --- CONNECTION & LIFECYCLE (DUAL MODE: ATTACHED CDP VS. CLOUD RUNNER) ---
 

@@ -96,7 +96,7 @@ def run_tests():
     with open(manifest_path, "r", encoding="utf-8") as f:
         manifest = json.load(f)
 
-    if manifest.get("version") in ["1.4.0", "1.4.1", "1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1", "1.9.0"] and manifest.get("status") == "installed" and manifest.get("error") is None:
+    if manifest.get("version") in ["1.4.0", "1.4.1", "1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1", "1.9.0", "1.9.1"] and manifest.get("status") == "installed" and manifest.get("error") is None:
         print(f"PASS: Test 6 - Manifest metadata valid (version={manifest.get('version')}, status=installed, error=null)")
         passed += 1
     else:

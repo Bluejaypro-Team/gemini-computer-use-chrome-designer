@@ -1,6 +1,6 @@
 {
   "skill_name": "gemini-computer-use-chrome-designer",
-  "version": "1.6.0",
+  "version": "1.9.1",
   "gcp_project": "tidal-mode-490503-i9",
   "gcp_region": "us-central1",
   "cloud_artifact_registry": "us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest",
@@ -37,7 +37,50 @@
     "python_packages": ["playwright", "google-genai", "pillow"]
   },
   "environment_variables": {
-    "PLAYWRIGHT_BROWSERS_PATH": "0"
+    "PLAYWRIGHT_BROWSERS_PATH": "0",
+    "BIGQUERY_DATASET": "bjp_telemetry_lakehouse",
+    "BIGQUERY_TABLE": "client_daily_telemetry_lifecycle"
+  },
+  "bigquery_lakehouse": {
+    "dataset_id": "bjp_telemetry_lakehouse",
+    "table_name": "client_daily_telemetry_lifecycle",
+    "project_id": "tidal-mode-490503-i9",
+    "location": "us-central1",
+    "schema_file": "bigquery_telemetry_schema.json",
+    "lifecycle_mode": "CONTINUOUS_LAKEHOUSE_PERSISTENCE",
+    "partition_type": "DAY",
+    "partition_field": "audit_date",
+    "looker_studio_integration": "DIRECT_NATIVE_BIGQUERY_VIEW",
+    "view_name": "v_looker_executive_audit"
+  },
+  "serverless_compute": {
+    "cloud_run_job": {
+      "job_name": "gemini-chrome-designer-job",
+      "manifest": "cloudrun-job.yaml",
+      "image": "us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest",
+      "cpu": "2",
+      "memory": "4Gi"
+    },
+    "cloud_scheduler": {
+      "job_name": "gemini-chrome-designer-daily-sweep",
+      "cron_schedule": "0 2 * * *",
+      "state": "PAUSED",
+      "time_zone": "America/Los_Angeles",
+      "config_file": "cloud_scheduler_config.json"
+    },
+    "workpool_specification": {
+      "workpool_name": "bjp-agentic-telemetry-workpool",
+      "concurrency_limit": 1,
+      "dispatch_protocol": "FIFO_SERIALIZED",
+      "rate_limit_inter_task_delay_seconds": 15
+    }
+  },
+  "resumption_gate_context": {
+    "stage_7_status": "PAUSED_STANDBY",
+    "scheduler_state": "PAUSED",
+    "core_matrix_isolation": "STRICTLY_DECOUPLED",
+    "resumption_directive": "USER_EXPLICIT_PROMPT_REQUIRED",
+    "grounded_source": "NotebookLM Project 2f9c506f-67c1-4b08-b252-c9979ff6ca48 (Source 02 Segment E: Imran-Mike Staging Review & Green Signal Protocol)"
   },
   "governance_rules": {
     "client_registry_domain_palette_grounding": "ENFORCED",

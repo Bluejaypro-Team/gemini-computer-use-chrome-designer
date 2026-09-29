@@ -1,0 +1,39 @@
+{
+  "name": "projects/tidal-mode-490503-i9/locations/us-central1/jobs/gemini-chrome-designer-daily-sweep",
+  "description": "Daily 02:00 AM off-peak BigQuery telemetry ingestion, Clarity behavioral audit, and visual state preservation across client domains",
+  "schedule": "0 2 * * *",
+  "state": "PAUSED",
+  "timeZone": "America/Los_Angeles",
+  "httpTarget": {
+    "uri": "https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/tidal-mode-490503-i9/jobs/gemini-chrome-designer-job:run",
+    "httpMethod": "POST",
+    "oidcToken": {
+      "serviceAccountEmail": "bjp-agent-runner@tidal-mode-490503-i9.iam.gserviceaccount.com",
+      "audience": "https://us-central1-run.googleapis.com/"
+    },
+    "headers": {
+      "User-Agent": "Bluejaypro-CloudScheduler/1.0",
+      "X-Goog-User-Project": "tidal-mode-490503-i9"
+    }
+  },
+  "retryConfig": {
+    "retryCount": 3,
+    "maxRetryDuration": "3600s",
+    "minBackoffDuration": "5s",
+    "maxBackoffDuration": "300s",
+    "maxDoublings": 5
+  },
+  "workpool_specification": {
+    "pool_name": "bjp-agentic-telemetry-workpool",
+    "region": "us-central1",
+    "max_concurrent_tasks": 1,
+    "queue_mode": "FIFO_SERIALIZED",
+    "inter_task_throttle_seconds": 15
+  },
+  "resumption_gate": {
+    "status": "PAUSED_STANDBY",
+    "activation_state": "PAUSED",
+    "unpause_directive": "USER_EXPLICIT_PROMPT_REQUIRED",
+    "green_signal_context": "Imran-Mike Grounded Dialogue (Source 02 Segment E: Staging Subdomain Verification before Production Push)"
+  }
+}

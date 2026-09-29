@@ -32,6 +32,12 @@ spec:
                     secretKeyRef:
                       name: gemini-api-key
                       key: latest
+                - name: GCP_QUOTA_PROJECT
+                  value: "tidal-mode-490503-i9"
+                - name: BIGQUERY_DATASET
+                  value: "bjp_telemetry_lakehouse"
+                - name: BIGQUERY_TABLE
+                  value: "client_daily_telemetry_lifecycle"
               # Cloud Runner Specification Flags passed as args
               args:
                 - "cloud-run"

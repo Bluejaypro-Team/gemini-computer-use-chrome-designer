@@ -1,0 +1,148 @@
+{
+  "dataset_id": "bjp_telemetry_lakehouse",
+  "table_name": "client_daily_telemetry_lifecycle",
+  "project_id": "tidal-mode-490503-i9",
+  "location": "us-central1",
+  "description": "Continuous daily BigQuery telemetry lakehouse preserving multi-channel metrics (GSC, Clarity, Elementor audits, CPL) across client staging and production domains",
+  "time_partitioning": {
+    "type": "DAY",
+    "field": "audit_date"
+  },
+  "clustering": {
+    "fields": ["domain", "staging_subdomain", "stage_7_status"]
+  },
+  "schema": [
+    {
+      "name": "record_id",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Unique SHA-256 hash identifier for the daily telemetry audit run"
+    },
+    {
+      "name": "audit_date",
+      "type": "DATE",
+      "mode": "REQUIRED",
+      "description": "Calendar partition date for the cron execution"
+    },
+    {
+      "name": "timestamp",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Precise UTC timestamp of telemetry capture"
+    },
+    {
+      "name": "domain",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Apex production domain (e.g. burnetteconstructioninc.com)"
+    },
+    {
+      "name": "staging_subdomain",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Active staging subdomain (e.g. burnet.elkgroveseocompany.com)"
+    },
+    {
+      "name": "slack_channel_id",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "Native Slack project communication channel ID"
+    },
+    {
+      "name": "notebook_id",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "NotebookLM project ID maintaining entity ground truth"
+    },
+    {
+      "name": "gsc_total_impressions",
+      "type": "INT64",
+      "mode": "NULLABLE",
+      "description": "Total organic Google Search Console impressions over 30 days"
+    },
+    {
+      "name": "gsc_total_clicks",
+      "type": "INT64",
+      "mode": "NULLABLE",
+      "description": "Total organic Google Search Console clicks over 30 days"
+    },
+    {
+      "name": "gsc_avg_position",
+      "type": "FLOAT64",
+      "mode": "NULLABLE",
+      "description": "Weighted average SERP position"
+    },
+    {
+      "name": "clarity_total_sessions",
+      "type": "INT64",
+      "mode": "NULLABLE",
+      "description": "Total verified human session recordings in Microsoft Clarity"
+    },
+    {
+      "name": "clarity_dead_clicks_pct",
+      "type": "FLOAT64",
+      "mode": "NULLABLE",
+      "description": "Percentage of sessions containing dead clicks"
+    },
+    {
+      "name": "clarity_rage_clicks_pct",
+      "type": "FLOAT64",
+      "mode": "NULLABLE",
+      "description": "Percentage of sessions containing rage clicks"
+    },
+    {
+      "name": "clarity_form_abandonment_pct",
+      "type": "FLOAT64",
+      "mode": "NULLABLE",
+      "description": "Lead form start-to-dropoff friction percentage"
+    },
+    {
+      "name": "wcag_contrast_status",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "WCAG 2.1 AA luminance-adaptive contrast audit status (PASS/FAIL)"
+    },
+    {
+      "name": "mobile_375px_overflow_status",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Mobile horizontal overflow audit status at 375px viewport (PASS/FAIL)"
+    },
+    {
+      "name": "elementor_native_widgets",
+      "type": "INT64",
+      "mode": "REQUIRED",
+      "description": "Count of compliant native Elementor widgets"
+    },
+    {
+      "name": "raw_html_injected_widgets",
+      "type": "INT64",
+      "mode": "REQUIRED",
+      "description": "Count of prohibited raw HTML code widgets (must strictly be 0)"
+    },
+    {
+      "name": "blended_cpl_usd",
+      "type": "FLOAT64",
+      "mode": "NULLABLE",
+      "description": "Blended Cost-Per-Lead computed across paid channels"
+    },
+    {
+      "name": "estimated_lost_pipeline_value_usd",
+      "type": "FLOAT64",
+      "mode": "NULLABLE",
+      "description": "Estimated commercial revenue lost due to UX friction and form leaks"
+    },
+    {
+      "name": "stage_7_status",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Stage 7 lifecycle status: PAUSED_STANDBY vs ACTIVE_RESUMED"
+    },
+    {
+      "name": "resumption_gate_state",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Resumption gate state: AWAITING_USER_PROMPT vs APPROVED_GREEN_SIGNAL"
+    }
+  ]
+}

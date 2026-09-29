@@ -1,6 +1,6 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
@@ -36,7 +36,10 @@
     "subagent_brand_grounded": "scripts/brand_grounded_redesign_agent.py",
     "notebooklm_domain_registry": "notebooklm_domain_registry.json",
     "credentials_vault": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
-    "execution_graph_matrix": "docs/v140_execution_graph_and_mapping_matrix.md"
+    "execution_graph_matrix": "docs/v140_execution_graph_and_mapping_matrix.md",
+    "cloud_scheduler_config": "cloud_scheduler_config.json",
+    "bigquery_telemetry_schema": "bigquery_telemetry_schema.json",
+    "data_cloud_config": "data_cloud_config.json"
   },
   "cloud_runner_specification": {
     "profile": "gcloud-linux-vm-headless",
@@ -224,12 +227,17 @@
     },
     "stage_7_lifecycle_policy": {
       "status": "PAUSED_STANDBY",
-      "policy": "Core builder execution is strictly bounded to Stages 1 through 6. Stage 7 (Continuous Telemetry Feedback Loop and automated cron monitoring) is formally paused and kept decoupled from core execution matrices until the user explicitly issues a resumption prompt.",
-      "resumption_gate": "USER_EXPLICIT_PROMPT_REQUIRED"
+      "policy": "Core builder execution is strictly bounded to Stages 1 through 6. BigQuery acts as the persistent multi-channel telemetry lakehouse (dataset bjp_telemetry_lakehouse.client_daily_telemetry_lifecycle) updated continuously via daily cron sweep (0 2 * * * off-peak). Looker Studio connects natively to BigQuery analytical views without requiring ad-hoc invocation or bypasses. The active agentic workpool loop and autonomous builder modifications remain in PAUSED_STANDBY decoupled from core matrices until the user explicitly issues a green signal / resumption prompt.",
+      "resumption_gate": "USER_EXPLICIT_PROMPT_REQUIRED",
+      "bigquery_lakehouse_mode": "CONTINUOUS_CRON_PERSISTENCE",
+      "looker_studio_integration": "DIRECT_NATIVE_BIGQUERY_VIEW",
+      "workpool_job": "gemini-chrome-designer-job",
+      "cloud_scheduler_cron": "0 2 * * *",
+      "green_signal_grounding": "NotebookLM Project 2f9c506f-67c1-4b08-b252-c9979ff6ca48 (Source 02 Segment E)"
     }
   },
   "semver_tracking": {
-    "current_version": "1.9.0",
+    "current_version": "1.9.1",
     "change_history": [
       {
         "version": "1.0.0",
@@ -297,9 +305,9 @@
         "description": "Skill upgrade v1.9.0: Codified persistent_api_rate_limiting_protocol (Rule 12) and Error Class 13 (UnthrottledApiBurstViolationError). Enforced that even after free-tier quota exhaustion, the agent must never stop limiting API calling, mandating continuous minimum 2000ms inter-call throttling and backoff under quota project tidal-mode-490503-i9. Updated notebooklm_domain_registry.json with persistent NotebookLM project IDs across all 12 client entities and global canonical GCS task vault."
       },
       {
-        "version": "2.0.0",
+        "version": "1.9.1",
         "date": "2026-09-29",
-        "description": "Skill upgrade v2.0.0: Implemented 200ms ultra-fast responsiveness gate for all Playwright CDP actions using run_ultra_fast_action() helper and enforced continuous 2000ms minimum inter-call throttling to prevent quota exhaustion. Upgraded notebooklm_domain_registry.json to store all 12 client entity NotebookLM projects and production NotebookLM project IDs across the entire portfolio."
+        "description": "Skill upgrade v1.9.1: Formally codified BigQuery continuous telemetry lakehouse (bigquery_telemetry_schema.json) and Cloud Scheduler off-peak daily sweep (cloud_scheduler_config.json, cron: 0 2 * * *). Decoupled Looker Studio from procedural invocation/bypass by establishing native BigQuery analytical view binding. Anchored resumption gate context to NotebookLM Source 02 Segment E Green Signal Protocol."
       }
     ]
   }
