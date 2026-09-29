@@ -1,6 +1,6 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
@@ -227,17 +227,21 @@
     },
     "stage_7_lifecycle_policy": {
       "status": "PAUSED_STANDBY",
-      "policy": "Core builder execution is strictly bounded to Stages 1 through 6. BigQuery acts as the persistent multi-channel telemetry lakehouse (dataset bjp_telemetry_lakehouse.client_daily_telemetry_lifecycle) updated continuously via daily cron sweep (0 2 * * * off-peak). Looker Studio connects natively to BigQuery analytical views without requiring ad-hoc invocation or bypasses. The active agentic workpool loop and autonomous builder modifications remain in PAUSED_STANDBY decoupled from core matrices until the user explicitly issues a green signal / resumption prompt.",
-      "resumption_gate": "USER_EXPLICIT_PROMPT_REQUIRED",
+      "policy": "Core builder execution is strictly bounded to Stages 1 through 6. BigQuery acts as the persistent multi-tenant telemetry lakehouse (dataset bjp_telemetry_lakehouse.client_daily_telemetry_lifecycle) updated continuously via Cloud Scheduler daily cron sweep (0 2 * * * off-peak). Looker Studio connects natively to BigQuery analytical views without requiring ad-hoc invocation or bypasses. Active agentic builder mutations remain in PAUSED_STANDBY. Mirror repositories strictly enforce mirror_repo_policy: PAUSE_ONLY. The Green Signal requires direct user active input; autonomous execution from mined client conversation transcripts is strictly prohibited.",
+      "telemetry_cron_sweep": "ENABLED",
+      "agentic_builder_mutations": "PAUSED_STANDBY",
+      "mirror_repo_policy": "PAUSE_ONLY",
+      "resumption_gate": "USER_ACTIVE_PROMPT_REQUIRED",
+      "transcript_autonomous_trigger": "STRICTLY_PROHIBITED",
+      "trigger_source": "IDE_CHAT_USER_INPUT_ONLY",
       "bigquery_lakehouse_mode": "CONTINUOUS_CRON_PERSISTENCE",
       "looker_studio_integration": "DIRECT_NATIVE_BIGQUERY_VIEW",
       "workpool_job": "gemini-chrome-designer-job",
-      "cloud_scheduler_cron": "0 2 * * *",
-      "green_signal_grounding": "NotebookLM Project 2f9c506f-67c1-4b08-b252-c9979ff6ca48 (Source 02 Segment E)"
+      "cloud_scheduler_cron": "0 2 * * *"
     }
   },
   "semver_tracking": {
-    "current_version": "1.9.1",
+    "current_version": "1.9.2",
     "change_history": [
       {
         "version": "1.0.0",
@@ -308,6 +312,11 @@
         "version": "1.9.1",
         "date": "2026-09-29",
         "description": "Skill upgrade v1.9.1: Formally codified BigQuery continuous telemetry lakehouse (bigquery_telemetry_schema.json) and Cloud Scheduler off-peak daily sweep (cloud_scheduler_config.json, cron: 0 2 * * *). Decoupled Looker Studio from procedural invocation/bypass by establishing native BigQuery analytical view binding. Anchored resumption gate context to NotebookLM Source 02 Segment E Green Signal Protocol."
+      },
+      {
+        "version": "1.9.2",
+        "date": "2026-09-29",
+        "description": "Skill upgrade v1.9.2: Codified Dual-Track Cloud Scheduler policy (read-only BigQuery telemetry sweep ENABLED at 0 2 * * *; agentic builder mutations PAUSED_STANDBY). Enforced mirror repository PAUSE_ONLY directive and codified strict Human-in-the-Loop Green Signal air-gap (transcript_autonomous_trigger: STRICTLY_PROHIBITED, trigger_source: IDE_CHAT_USER_INPUT_ONLY)."
       }
     ]
   }

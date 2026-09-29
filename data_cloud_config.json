@@ -1,6 +1,6 @@
 {
   "skill_name": "gemini-computer-use-chrome-designer",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "gcp_project": "tidal-mode-490503-i9",
   "gcp_region": "us-central1",
   "cloud_artifact_registry": "us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest",
@@ -48,6 +48,7 @@
     "location": "us-central1",
     "schema_file": "bigquery_telemetry_schema.json",
     "lifecycle_mode": "CONTINUOUS_LAKEHOUSE_PERSISTENCE",
+    "multi_tenant_scope": "ALL_8_STAGING_CLIENTS",
     "partition_type": "DAY",
     "partition_field": "audit_date",
     "looker_studio_integration": "DIRECT_NATIVE_BIGQUERY_VIEW",
@@ -64,7 +65,8 @@
     "cloud_scheduler": {
       "job_name": "gemini-chrome-designer-daily-sweep",
       "cron_schedule": "0 2 * * *",
-      "state": "PAUSED",
+      "state": "ENABLED",
+      "mode": "READ_ONLY_TELEMETRY_SWEEP",
       "time_zone": "America/Los_Angeles",
       "config_file": "cloud_scheduler_config.json"
     },
@@ -77,10 +79,14 @@
   },
   "resumption_gate_context": {
     "stage_7_status": "PAUSED_STANDBY",
-    "scheduler_state": "PAUSED",
+    "scheduler_state": "ENABLED_READ_ONLY",
+    "agentic_builder_mutations": "PAUSED_STANDBY",
+    "mirror_repo_policy": "PAUSE_ONLY",
     "core_matrix_isolation": "STRICTLY_DECOUPLED",
-    "resumption_directive": "USER_EXPLICIT_PROMPT_REQUIRED",
-    "grounded_source": "NotebookLM Project 2f9c506f-67c1-4b08-b252-c9979ff6ca48 (Source 02 Segment E: Imran-Mike Staging Review & Green Signal Protocol)"
+    "resumption_directive": "USER_ACTIVE_PROMPT_REQUIRED",
+    "transcript_autonomous_trigger": "STRICTLY_PROHIBITED",
+    "trigger_source": "IDE_CHAT_USER_INPUT_ONLY",
+    "grounded_source": "NotebookLM Project 2f9c506f-67c1-4b08-b252-c9979ff6ca48 (Source 02 Segment E: Imran-Mike Staging Review & Human-in-the-Loop Green Signal Protocol)"
   },
   "governance_rules": {
     "client_registry_domain_palette_grounding": "ENFORCED",
