@@ -110,6 +110,60 @@ GCLOUD_CHROME_ARGS = [
 ]
 
 
+class CredentialProvider:
+    """
+    Secure Credential Provider for Staging Sub-Domains.
+    Loads administrative and server credentials from isolated local CSV files.
+    Enforces password masking in all telemetry logs.
+    """
+    DEFAULT_CSV_PATHS = [
+        Path(r"C:\Users\User\.gemini\antigravity-ide\scratch\subdomain_credentials.csv"),
+        Path(r"C:\Users\User\Downloads\subdomain_credentials.csv"),
+        Path(r"C:\Users\User\Downloads\All Skill Github Link.xlsx - subdomain.csv")
+    ]
+
+    @classmethod
+    def load_credentials(cls, domain, csv_path=None):
+        search_paths = [Path(csv_path)] if csv_path else cls.DEFAULT_CSV_PATHS
+        target_domain = domain.lower().replace("https://", "").replace("http://", "").split("/")[0]
+
+        for p in search_paths:
+            if not p.exists():
+                continue
+            try:
+                import csv
+                with open(p, "r", encoding="utf-8") as f:
+                    reader = csv.reader(f)
+                    header = next(reader, None)
+                    for row in reader:
+                        if not row or not row[0].strip():
+                            continue
+                        row_domain = row[0].strip().lower().replace("https://", "").replace("http://", "").split("/")[0]
+                        if row_domain in target_domain or target_domain in row_domain:
+                            wp_user = row[1].strip() if len(row) > 1 else ""
+                            wp_pass = row[2].strip() if len(row) > 2 else ""
+                            orig_dom = row[3].strip() if len(row) > 3 else ""
+                            ftp_host = row[4].strip() if len(row) > 4 else ""
+                            ftp_user = row[5].strip() if len(row) > 5 else ""
+                            ftp_pass = row[6].strip() if len(row) > 6 else ""
+                            slack_id = row[7].strip() if len(row) > 7 else ""
+                            return {
+                                "domain": row_domain,
+                                "wp_login_url": f"https://{row_domain}/wp-login.php",
+                                "wp_username": wp_user,
+                                "wp_password": wp_pass,
+                                "original_domain": orig_dom,
+                                "ftp_host": ftp_host,
+                                "ftp_username": ftp_user,
+                                "ftp_password": ftp_pass,
+                                "slack_channel_id": slack_id,
+                                "source_file": str(p)
+                            }
+            except Exception as e:
+                pass
+        return None
+
+
 class ChromeDesignerAgent:
     def __init__(self, cdp_url="http://localhost:9222", api_key=DEFAULT_API_KEY, expected_domain=None, use_cloud_runner=False):
         self.cdp_url = cdp_url
@@ -214,6 +268,61 @@ class ChromeDesignerAgent:
             except Exception:
                 pass
         print("[ChromeDesignerAgent] Disconnected from browser session.")
+
+    # --- CREDENTIAL PROVIDER & WORDPRESS AUTHENTICATION ---
+
+    def get_credentials(self, domain=None, csv_path=None):
+        """Retrieves stored credentials for domain via CredentialProvider."""
+        target = domain or self.expected_domain
+        if not target and self.page:
+            try:
+                target = urlparse(self.page.url).netloc
+            except Exception:
+                pass
+        return CredentialProvider.load_credentials(target, csv_path=csv_path) if target else None
+
+    def login_to_wordpress(self, domain=None, credentials=None, timeout_ms=30000):
+        """
+        Navigates to wp-login.php on target domain and authenticates using CredentialProvider.
+        Masks passwords in all console output.
+        """
+        target = domain or self.expected_domain
+        if not target and self.page:
+            target = urlparse(self.page.url).netloc
+        if not target:
+            raise ValueError("Target domain required for WordPress authentication.")
+
+        creds = credentials or self.get_credentials(target)
+        if not creds or not creds.get("wp_username") or not creds.get("wp_password"):
+            raise ValueError(f"No credentials found for domain '{target}' in CredentialProvider paths.")
+
+        login_url = creds.get("wp_login_url", f"https://{target}/wp-login.php")
+        print(f"[WP Auth] Navigating to login for '{target}' (User: {creds['wp_username']}, Pass: [MASKED])...")
+
+        self.page.goto(login_url, wait_until="domcontentloaded", timeout=timeout_ms)
+        self.stabilize_viewport(1500)
+
+        # Check if already logged in (redirected to wp-admin)
+        if "/wp-admin" in self.page.url and "wp-login.php" not in self.page.url:
+            print(f"[WP Auth] Session already active at {self.page.url}.")
+            return {"success": True, "domain": target, "status": "already_authenticated"}
+
+        # Fill credentials
+        try:
+            self.page.fill("#user_login", creds["wp_username"])
+            self.page.fill("#user_pass", creds["wp_password"])
+            self.page.click("#wp-submit")
+            self.stabilize_viewport(3000)
+
+            if "wp-admin" in self.page.url:
+                print(f"[WP Auth] Successfully logged into WordPress admin for '{target}'.")
+                return {"success": True, "domain": target, "status": "authenticated"}
+            else:
+                err_el = self.page.query_selector("#login_error")
+                err_text = err_el.inner_text() if err_el else "Unknown authentication failure"
+                raise RuntimeError(f"WordPress authentication failed for '{target}': {err_text}")
+        except Exception as e:
+            raise RuntimeError(f"WordPress login interaction failed: {e}")
 
     # --- CLUSTER B: SPATIAL PHYSICS & VIEWPORT NORMALIZATION ---
 

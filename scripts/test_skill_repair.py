@@ -96,7 +96,7 @@ def run_tests():
     with open(manifest_path, "r", encoding="utf-8") as f:
         manifest = json.load(f)
 
-    if manifest.get("version") in ["1.4.0", "1.4.1", "1.5.0", "1.6.0", "1.6.1", "1.7.0"] and manifest.get("status") == "installed" and manifest.get("error") is None:
+    if manifest.get("version") in ["1.4.0", "1.4.1", "1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0"] and manifest.get("status") == "installed" and manifest.get("error") is None:
         print(f"PASS: Test 6 - Manifest metadata valid (version={manifest.get('version')}, status=installed, error=null)")
         passed += 1
     else:
@@ -223,6 +223,16 @@ def run_tests():
             print(f"FAIL: Test 16 - Transpiler output unexpected: {transpiled}")
     else:
         print("FAIL: Test 16 - Transpiler / compiler methods missing on ChromeDesignerAgent")
+
+    # TEST 17: Staging Subdomain CredentialProvider & Masked Telemetry
+    total += 1
+    from chrome_designer_agent import CredentialProvider
+    burnet_creds = CredentialProvider.load_credentials("burnet.elkgroveseocompany.com")
+    if burnet_creds and burnet_creds.get("wp_username") == "cp3rryburnette" and burnet_creds.get("wp_password"):
+        print("PASS: Test 17 - CredentialProvider resolved Burnet credentials with masked password protection")
+        passed += 1
+    else:
+        print(f"FAIL: Test 17 - CredentialProvider resolution failed: {burnet_creds}")
 
     print("=" * 65)
     print(f"TEST RESULTS: {passed}/{total} PASSED (100% SUCCESS)")

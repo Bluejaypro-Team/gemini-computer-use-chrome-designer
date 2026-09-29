@@ -1,6 +1,6 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
@@ -31,6 +31,7 @@
     "execution_engine": "scripts/chrome_designer_agent.py",
     "subagent_brand_grounded": "scripts/brand_grounded_redesign_agent.py",
     "notebooklm_domain_registry": "notebooklm_domain_registry.json",
+    "credentials_vault": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
     "execution_graph_matrix": "docs/v140_execution_graph_and_mapping_matrix.md"
   },
   "cloud_runner_specification": {
@@ -156,7 +157,7 @@
     }
   },
   "semver_tracking": {
-    "current_version": "1.7.0",
+    "current_version": "1.8.0",
     "change_history": [
       {
         "version": "1.0.0",
@@ -207,6 +208,11 @@
         "version": "1.7.0",
         "date": "2026-09-29",
         "description": "Skill upgrade v1.7.0: Codified signature_grid_and_spacing_rhythm and mobile_horizontal_overflow_gate in visual_governance_rules (11 enforced rules). Added Error Class 12 (HorizontalOverflowError) and implemented audit_mobile_horizontal_overflow() and transpile_html_to_widgets() / compile_to_elementor_native() in chrome_designer_agent.py. Synchronized test_skill_repair.py and global mirrors."
+      },
+      {
+        "version": "1.8.0",
+        "date": "2026-09-29",
+        "description": "Skill upgrade v1.8.0: Integrated CredentialProvider and login_to_wordpress() into chrome_designer_agent.py for automated, masked authentication across staging sub-domains via isolated CSV credential vault (subdomain_credentials.csv). Registered credentials_vault address point."
       }
     ]
   }
