@@ -1,6 +1,6 @@
 {
   "name": "gemini-computer-use-chrome-designer",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "status": "installed",
   "error": null,
   "displayName": "Gemini Computer Use Chrome Designer & Visual Builder Studio",
@@ -12,7 +12,11 @@
   "runtime": {
     "node": ">=18.0",
     "python": ">=3.10",
-    "os": ["windows", "linux", "darwin"]
+    "os": [
+      "windows",
+      "linux",
+      "darwin"
+    ]
   },
   "subagents": {
     "brand_grounded_redesign_architect": {
@@ -47,7 +51,10 @@
       "--hide-scrollbars"
     ],
     "context": {
-      "viewport": { "width": 1920, "height": 1080 },
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
       "device_scale_factor": 1.0,
       "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
     },
@@ -105,28 +112,86 @@
     "mobile_horizontal_overflow_gate": {
       "status": "ENFORCED",
       "policy": "Audit scrollWidth <= innerWidth at 375px mobile breakpoint; identify offending elements with getBoundingClientRect().right > window.innerWidth and automatically strip fixed pixel widths prior to publishing."
+    },
+    "persistent_api_rate_limiting_protocol": {
+      "status": "ENFORCED",
+      "policy": "Even when the free-tier quota has finished, the agent must NEVER stop limiting API calls. When transitioning to metered billing under project tidal-mode-490503-i9, continuous adaptive rate-limiting (minimum 2000ms inter-call spacing, exponential backoff with jitter on 429/503 responses, and max concurrency ceiling = 1) must remain strictly active across all Gemini model calls, Playwright CDP actions, and Google Cloud API operations to eliminate burst exhaustion and prevent runaway cloud billing."
     }
   },
   "forensic_error_handling_taxonomy": {
-    "error_1": { "name": "Rogue Standalone Widget Creation", "severity": "CRITICAL", "mitigation": "Enforced in-place repeater duplication via $e.run" },
-    "error_2": { "name": "Raw HTML Injection via Code Widget", "severity": "CRITICAL", "mitigation": "Revocation of raw code widgets; native builder models only" },
-    "error_3": { "name": "Coordinate Drift on High-DPI Displays", "severity": "HIGH", "mitigation": "DPI normalization via window.devicePixelRatio (x/dpr, y/dpr)" },
-    "error_4": { "name": "Stale Screenshot Loop", "severity": "HIGH", "mitigation": "Mandatory stabilization wait (networkidle + 500ms reflow)" },
-    "error_5": { "name": "Widget Sidebar Misidentification", "severity": "HIGH", "mitigation": "Sidebar Exclusion Zone (x < 300px rejection)" },
-    "error_6": { "name": "Builder Panel State Desync", "severity": "MEDIUM", "mitigation": "Selection ID verification before panel mutations" },
-    "error_7": { "name": "Unsaved Changes & Session Loss", "severity": "MEDIUM", "mitigation": "Explicit save trigger and console verification" },
-    "error_8": { "name": "Multi-Tab Confusion", "severity": "MEDIUM", "mitigation": "Target page/post URL assertion on connection" },
-    "error_9": { "name": "Color Contrast Violation on Dark Overlays", "severity": "MEDIUM", "mitigation": "Luminance-adaptive WCAG 2.1 AA token injection using client live palette (--ast-global-color-*), zero synthetic dark overlays" },
-    "error_10": { "name": "Cross-Domain Safety Boundary Violation", "severity": "CRITICAL", "mitigation": "Domain boundary lock with DomainBoundaryViolationError" },
-    "error_11": { "name": "Default Theme Fallback Violation", "severity": "CRITICAL", "mitigation": "Strict live domain CSS token extraction via CDP before scaffolding; prohibition of synthetic default theme (#0F172A/#EAB308) fallbacks on client registry domains" },
-    "error_12": { "name": "Mobile Horizontal Overflow Violation", "severity": "HIGH", "mitigation": "Mobile overflow detection gate at 375px; convert fixed pixel widths to fluid max-width: 100% and reset unmanaged margins" }
+    "error_1": {
+      "name": "Rogue Standalone Widget Creation",
+      "severity": "CRITICAL",
+      "mitigation": "Enforced in-place repeater duplication via $e.run"
+    },
+    "error_2": {
+      "name": "Raw HTML Injection via Code Widget",
+      "severity": "CRITICAL",
+      "mitigation": "Revocation of raw code widgets; native builder models only"
+    },
+    "error_3": {
+      "name": "Coordinate Drift on High-DPI Displays",
+      "severity": "HIGH",
+      "mitigation": "DPI normalization via window.devicePixelRatio (x/dpr, y/dpr)"
+    },
+    "error_4": {
+      "name": "Stale Screenshot Loop",
+      "severity": "HIGH",
+      "mitigation": "Mandatory stabilization wait (networkidle + 500ms reflow)"
+    },
+    "error_5": {
+      "name": "Widget Sidebar Misidentification",
+      "severity": "HIGH",
+      "mitigation": "Sidebar Exclusion Zone (x < 300px rejection)"
+    },
+    "error_6": {
+      "name": "Builder Panel State Desync",
+      "severity": "MEDIUM",
+      "mitigation": "Selection ID verification before panel mutations"
+    },
+    "error_7": {
+      "name": "Unsaved Changes & Session Loss",
+      "severity": "MEDIUM",
+      "mitigation": "Explicit save trigger and console verification"
+    },
+    "error_8": {
+      "name": "Multi-Tab Confusion",
+      "severity": "MEDIUM",
+      "mitigation": "Target page/post URL assertion on connection"
+    },
+    "error_9": {
+      "name": "Color Contrast Violation on Dark Overlays",
+      "severity": "MEDIUM",
+      "mitigation": "Luminance-adaptive WCAG 2.1 AA token injection using client live palette (--ast-global-color-*), zero synthetic dark overlays"
+    },
+    "error_10": {
+      "name": "Cross-Domain Safety Boundary Violation",
+      "severity": "CRITICAL",
+      "mitigation": "Domain boundary lock with DomainBoundaryViolationError"
+    },
+    "error_11": {
+      "name": "Default Theme Fallback Violation",
+      "severity": "CRITICAL",
+      "mitigation": "Strict live domain CSS token extraction via CDP before scaffolding; prohibition of synthetic default theme (#0F172A/#EAB308) fallbacks on client registry domains"
+    },
+    "error_12": {
+      "name": "Mobile Horizontal Overflow Violation",
+      "severity": "HIGH",
+      "mitigation": "Mobile overflow detection gate at 375px; convert fixed pixel widths to fluid max-width: 100% and reset unmanaged margins"
+    },
+    "error_13": {
+      "name": "Unthrottled API Burst Violation",
+      "severity": "CRITICAL",
+      "mitigation": "Persistent API rate-limiting gate: maintain continuous minimum 2000ms inter-request pacing, exponential backoff, and concurrency throttling regardless of free-tier exhaustion or paid tier activation; never disable rate-limiters upon free-tier depletion."
+    }
   },
   "enforcement_rules": {
     "core_rules": [
       "ALWAYS perform a mandatory DOM/parent-container pre-audit before inserting elements.",
       "NEVER drag and drop standalone widgets into structured parent repeater containers.",
       "ALWAYS duplicate existing child elements when adding items to accordions, tabs, FAQs, or icon lists.",
-      "NEVER invoke default synthetic design themes (#0F172A / #EAB308) when scaffolding redesigns from Clarity database or client registry domains; ALWAYS ground design tokens in the client's live domain."
+      "NEVER invoke default synthetic design themes (#0F172A / #EAB308) when scaffolding redesigns from Clarity database or client registry domains; ALWAYS ground design tokens in the client's live domain.",
+      "NEVER stop limiting API calling when free-tier quota finishes; ALWAYS maintain persistent millisecond rate-limiting, request throttling, and exponential backoff under quota project tidal-mode-490503-i9."
     ],
     "dos": [
       "Pre-Audit Requirement: Force a DOM lookup step before taking layout actions (prevents No DOM Pre-Audit Protocol).",
@@ -136,7 +201,8 @@
       "Domain Boundary Lock: Assert page.url() matches target domain before and after every action.",
       "DPI Normalization: Query devicePixelRatio and divide coordinates when dpr !== 1.0.",
       "Panel Selection Verification: Verify selected element ID matches intended target before panel modifications.",
-      "Client Domain Grounding: When scaffolding a redesign from Clarity telemetry or client registry channel domains, query live stylesheet and theme CSS tokens (--ast-global-color-*, --e-global-color-*) to inherit authentic brand colors before modifying any UI."
+      "Client Domain Grounding: When scaffolding a redesign from Clarity telemetry or client registry channel domains, query live stylesheet and theme CSS tokens (--ast-global-color-*, --e-global-color-*) to inherit authentic brand colors before modifying any UI.",
+      "Continuous API Throttling: Enforce continuous inter-call throttling (minimum 2000ms pause) across all API, Vertex AI, and CDP calls, even after transitioning past free-tier limits."
     ],
     "donts": [
       "NEVER fall back to standalone widget creation when hasRepeaterAdd returns false.",
@@ -145,7 +211,8 @@
       "NEVER click within the sidebar exclusion zone (x < 300px) during canvas operations.",
       "NEVER execute consecutive click actions without stabilization screenshot.",
       "NEVER rely on default paragraph text colors (#334155) over dark overlays.",
-      "NEVER invoke or fall back to default synthetic design theme choices (#0F172A / #EAB308 or arbitrary luxury palettes) on client registry redesign tasks."
+      "NEVER invoke or fall back to default synthetic design theme choices (#0F172A / #EAB308 or arbitrary luxury palettes) on client registry redesign tasks.",
+      "NEVER disable or bypass rate-limiting controls when free-tier credits expire; unthrottled API burst calls are strictly prohibited."
     ],
     "detection_and_purge": "If a background fill mismatch (#FFFFFF vs #F0F4F9) or broken tab order is detected during post-action visual audit, immediately locate and delete the rogue standalone widget using Elementor Navigator panel, then execute the In-Place Repeater Duplication Protocol.",
     "nlm_forensic_source": {
@@ -154,10 +221,15 @@
       "notebook_url": "https://notebook.google.com/notebook/2f9c506f-67c1-4b08-b252-c9979ff6ca48",
       "execution_matrix_source": "Gemini Computer-Use Chrome Designer v1.4.0: Execution-Level Architecture & Forensic Error Mapping Matrix",
       "source_ingestion_status": "ACTIVE_VERIFIED"
+    },
+    "stage_7_lifecycle_policy": {
+      "status": "PAUSED_STANDBY",
+      "policy": "Core builder execution is strictly bounded to Stages 1 through 6. Stage 7 (Continuous Telemetry Feedback Loop and automated cron monitoring) is formally paused and kept decoupled from core execution matrices until the user explicitly issues a resumption prompt.",
+      "resumption_gate": "USER_EXPLICIT_PROMPT_REQUIRED"
     }
   },
   "semver_tracking": {
-    "current_version": "1.8.0",
+    "current_version": "1.9.0",
     "change_history": [
       {
         "version": "1.0.0",
@@ -172,7 +244,7 @@
       {
         "version": "1.2.0",
         "date": "2026-09-16",
-        "description": "Skill repair v2: Transcript-grounded root cause with exact step references (3709→3714→3718→3730→3731) from session 9e4b293b. Root cause: hasRepeaterAdd=false caused standalone widget cc5bc34 fallback instead of $e.run('document/repeater/duplicate') on nested-accordion 9c3d93f."
+        "description": "Skill repair v2: Transcript-grounded root cause with exact step references (3709\u21923714\u21923718\u21923730\u21923731) from session 9e4b293b. Root cause: hasRepeaterAdd=false caused standalone widget cc5bc34 fallback instead of $e.run('document/repeater/duplicate') on nested-accordion 9c3d93f."
       },
       {
         "version": "1.3.0",
@@ -213,6 +285,21 @@
         "version": "1.8.0",
         "date": "2026-09-29",
         "description": "Skill upgrade v1.8.0: Integrated CredentialProvider and login_to_wordpress() into chrome_designer_agent.py for automated, masked authentication across staging sub-domains via isolated CSV credential vault (subdomain_credentials.csv). Registered credentials_vault address point."
+      },
+      {
+        "version": "1.8.1",
+        "date": "2026-09-29",
+        "description": "Skill upgrade v1.8.1: Enabled complete credentials vault across all 8 client staging sub-domains and production domains in notebooklm_domain_registry.json. Implemented Stage 7 isolation policy (PAUSED_STANDBY) decoupling long-horizon telemetry feedback from core execution matrices (Stages 1-6) pending explicit user resumption."
+      },
+      {
+        "version": "1.9.0",
+        "date": "2026-09-29",
+        "description": "Skill upgrade v1.9.0: Codified persistent_api_rate_limiting_protocol (Rule 12) and Error Class 13 (UnthrottledApiBurstViolationError). Enforced that even after free-tier quota exhaustion, the agent must never stop limiting API calling, mandating continuous minimum 2000ms inter-call throttling and backoff under quota project tidal-mode-490503-i9. Updated notebooklm_domain_registry.json with persistent NotebookLM project IDs across all 12 client entities and global canonical GCS task vault."
+      },
+      {
+        "version": "2.0.0",
+        "date": "2026-09-29",
+        "description": "Skill upgrade v2.0.0: Implemented 200ms ultra-fast responsiveness gate for all Playwright CDP actions using run_ultra_fast_action() helper and enforced continuous 2000ms minimum inter-call throttling to prevent quota exhaustion. Upgraded notebooklm_domain_registry.json to store all 12 client entity NotebookLM projects and production NotebookLM project IDs across the entire portfolio."
       }
     ]
   }

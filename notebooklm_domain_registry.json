@@ -4,14 +4,142 @@
     "domain": "burnetteco.com",
     "staging_subdomain": "burnet.elkgroveseocompany.com",
     "notebook_id": "cac5c3f0-4c52-560b-b9f3-fc18702f8bde",
-    "notebook_title": "Burnetteco.com Redesign Studio & Clarity Grounding",
+    "global_notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "Burnette Construction Redesign Studio and Clarity Grounding",
+    "slack_channel_id": "C0BMQAQKWM8",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
     "created_at": "2026-09-28T13:49:16Z",
-    "last_accessed_at": "2026-09-28T13:49:24Z",
-    "execution_count": 2,
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 5,
     "sources_indexed": [
       "burnetteco.com_brand_tokens",
       "burnetteco.com_clarity_telemetry",
-      "burnetteco.com_redesign_grounded_spec"
+      "burnetteco.com_redesign_grounded_spec",
+      "rest_vs_ftp_vs_cdp_threat_matrix",
+      "landing_page_materiality_sitemap_nap_protocol"
+    ]
+  },
+  "proglassgv.com:proglass.elkgroveseocompany.com": {
+    "tag": "proglassgv.com:proglass.elkgroveseocompany.com",
+    "domain": "proglassgv.com",
+    "staging_subdomain": "proglass.elkgroveseocompany.com",
+    "notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "Pro Glass and Mirror Redesign Studio and Materiality Grounding",
+    "slack_channel_id": "C0APZ7E06A1",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
+    "created_at": "2026-09-29T07:00:00Z",
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 1,
+    "sources_indexed": [
+      "proglassgv.com_brand_tokens",
+      "proglass_all_28_posts_audit",
+      "landing_page_materiality_sitemap_nap_protocol"
+    ]
+  },
+  "aipowered.elkgroveseocompany.com:aipowered.elkgroveseocompany.com": {
+    "tag": "aipowered.elkgroveseocompany.com:aipowered.elkgroveseocompany.com",
+    "domain": "aipowered.elkgroveseocompany.com",
+    "staging_subdomain": "aipowered.elkgroveseocompany.com",
+    "notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "AI Powered Redesign Studio and Strategy Grounding",
+    "slack_channel_id": "C09A34T9UGK",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
+    "created_at": "2026-09-29T07:00:00Z",
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 1,
+    "sources_indexed": [
+      "aipowered_strategy_tokens"
+    ]
+  },
+  "aipoweredseoagent.com:aipoweredseoagent.elkgroveseocompany.com": {
+    "tag": "aipoweredseoagent.com:aipoweredseoagent.elkgroveseocompany.com",
+    "domain": "aipoweredseoagent.com",
+    "staging_subdomain": "aipoweredseoagent.elkgroveseocompany.com",
+    "notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "AI Powered SEO Agent Redesign Studio and Clarity Grounding",
+    "slack_channel_id": "C09A34T9UGK",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
+    "created_at": "2026-09-29T07:00:00Z",
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 1,
+    "sources_indexed": [
+      "aipoweredseoagent_tokens"
+    ]
+  },
+  "happyhomeslighting.com:lighting.elkgroveseocompany.com": {
+    "tag": "happyhomeslighting.com:lighting.elkgroveseocompany.com",
+    "domain": "happyhomeslighting.com",
+    "staging_subdomain": "lighting.elkgroveseocompany.com",
+    "notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "Happy Homes Permanent Lighting Redesign Studio and Clarity Grounding",
+    "slack_channel_id": "C09LBPAU8CR",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
+    "created_at": "2026-09-29T07:00:00Z",
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 1,
+    "sources_indexed": [
+      "happyhomes_lighting_eave_tokens"
+    ]
+  },
+  "aiseo.elkgroveseocompany.com:aiseo.elkgroveseocompany.com": {
+    "tag": "aiseo.elkgroveseocompany.com:aiseo.elkgroveseocompany.com",
+    "domain": "aiseo.elkgroveseocompany.com",
+    "staging_subdomain": "aiseo.elkgroveseocompany.com",
+    "notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "AISEO Redesign Studio and Telemetry Grounding",
+    "slack_channel_id": "C09A34T9UGK",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
+    "created_at": "2026-09-29T07:00:00Z",
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 1,
+    "sources_indexed": [
+      "sacramento_aiseo_tokens"
+    ]
+  },
+  "gtamasonry.ca:gta.elkgroveseocompany.com": {
+    "tag": "gtamasonry.ca:gta.elkgroveseocompany.com",
+    "domain": "gtamasonry.ca",
+    "staging_subdomain": "gta.elkgroveseocompany.com",
+    "notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "GTA Masonry Restoration Redesign Studio and Clarity Grounding",
+    "slack_channel_id": "C0922N3NC4A",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
+    "created_at": "2026-09-29T07:00:00Z",
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 1,
+    "sources_indexed": [
+      "gtamasonry_restoration_tokens"
+    ]
+  },
+  "riggssalon.com:riggsalon.elkgroveseocompany.com": {
+    "tag": "riggssalon.com:riggsalon.elkgroveseocompany.com",
+    "domain": "riggssalon.com",
+    "staging_subdomain": "riggsalon.elkgroveseocompany.com",
+    "notebook_id": "2f9c506f-67c1-4b08-b252-c9979ff6ca48",
+    "notebook_title": "Riggs Salon and Spa Redesign Studio and Clarity Grounding",
+    "slack_channel_id": "C0A815JQ087",
+    "credential_vault_ref": "C:\\Users\\User\\.gemini\\antigravity-ide\\scratch\\subdomain_credentials.csv",
+    "auth_status": "CREDENTIALS_ENABLED_VERIFIED",
+    "stage_7_status": "PAUSED_STANDBY",
+    "created_at": "2026-09-29T07:00:00Z",
+    "last_accessed_at": "2026-09-29T07:15:00Z",
+    "execution_count": 1,
+    "sources_indexed": [
+      "camarillo_riggs_salon_tokens"
     ]
   }
 }

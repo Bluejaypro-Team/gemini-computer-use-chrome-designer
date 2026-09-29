@@ -1,6 +1,6 @@
 {
   "skill_name": "gemini-computer-use-chrome-designer",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "gcp_project": "tidal-mode-490503-i9",
   "gcp_region": "us-central1",
   "cloud_artifact_registry": "us-central1-docker.pkg.dev/tidal-mode-490503-i9/agent-releases/gemini-computer-use-chrome-designer:latest",
@@ -42,8 +42,14 @@
   "governance_rules": {
     "client_registry_domain_palette_grounding": "ENFORCED",
     "zero_synthetic_theme_fallback": true,
+    "persistent_api_rate_limiting": "ENFORCED",
+    "post_free_tier_throttling_active": true,
+    "min_inter_call_delay_ms": 2000,
+    "max_inter_call_delay_ms": 15000,
     "error_taxonomy": {
-      "error_11": "DefaultThemeFallbackViolationError"
+      "error_11": "DefaultThemeFallbackViolationError",
+      "error_12": "MobileHorizontalOverflowViolationError",
+      "error_13": "UnthrottledApiBurstViolationError"
     }
   },
   "quota_project": "tidal-mode-490503-i9"

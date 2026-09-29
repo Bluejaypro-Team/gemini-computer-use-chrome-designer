@@ -96,7 +96,7 @@ def run_tests():
     with open(manifest_path, "r", encoding="utf-8") as f:
         manifest = json.load(f)
 
-    if manifest.get("version") in ["1.4.0", "1.4.1", "1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0"] and manifest.get("status") == "installed" and manifest.get("error") is None:
+    if manifest.get("version") in ["1.4.0", "1.4.1", "1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1", "1.9.0"] and manifest.get("status") == "installed" and manifest.get("error") is None:
         print(f"PASS: Test 6 - Manifest metadata valid (version={manifest.get('version')}, status=installed, error=null)")
         passed += 1
     else:
@@ -233,6 +233,36 @@ def run_tests():
         passed += 1
     else:
         print(f"FAIL: Test 17 - CredentialProvider resolution failed: {burnet_creds}")
+
+    # TEST 18: Stage 7 Lifecycle Isolation & Decoupling Gate
+    total += 1
+    s7_policy = manifest.get("enforcement_rules", {}).get("stage_7_lifecycle_policy", {})
+    s7_status_manifest = s7_policy.get("status")
+    s7_agent_status = agent.stage_7_status
+    s7_eval_bypassed = agent.evaluate_stage_7_execution(resume_requested=False)
+    s7_eval_resumed = agent.evaluate_stage_7_execution(resume_requested=True)
+
+    registry_path = SKILL_DIR / "notebooklm_domain_registry.json"
+    reg_ok = False
+    if registry_path.exists():
+        with open(registry_path, "r", encoding="utf-8") as f:
+            reg_data = json.load(f)
+        reg_ok = all(
+            entry.get("stage_7_status") == "PAUSED_STANDBY" and
+            entry.get("auth_status") == "CREDENTIALS_ENABLED_VERIFIED"
+            for entry in reg_data.values()
+        )
+
+    if (s7_status_manifest == "PAUSED_STANDBY" and
+        s7_agent_status == "PAUSED_STANDBY" and
+        s7_eval_bypassed.get("status") == "PAUSED_STANDBY" and
+        s7_eval_bypassed.get("bypassed") is True and
+        s7_eval_resumed.get("status") == "ACTIVE_RESUMED" and
+        reg_ok):
+        print("PASS: Test 18 - Stage 7 isolation gate verified (PAUSED_STANDBY decoupling across manifest, agent, and registry)")
+        passed += 1
+    else:
+        print(f"FAIL: Test 18 - Stage 7 isolation check failed: manifest={s7_status_manifest}, agent={s7_agent_status}, reg_ok={reg_ok}")
 
     print("=" * 65)
     print(f"TEST RESULTS: {passed}/{total} PASSED (100% SUCCESS)")

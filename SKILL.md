@@ -304,10 +304,11 @@ All visual builder operations are wrapped by 9 active middleware interceptors:
 7. **`save_verification_protocol` [ENFORCED]:** End modification batches with explicit `$e.run('document/save/auto')` and verify HTTP response status.
 8. **`panel_selection_verification` [ENFORCED]:** Query active element ID prior to panel input to confirm alignment with target widget ID.
 9. **`client_registry_domain_palette_grounding` [ENFORCED]:** When scaffolding or executing any redesign job from Microsoft Clarity database or any client registry channel domain, the agent is strictly prohibited from invoking synthetic default design theme choices (such as generic Midnight Blue `#0F172A` and Gold `#EAB308`). All design tokens, button styles, accents, and surfaces must be extracted directly from the live domain Astra/Elementor CSS tokens (`--ast-global-color-*`).
+10. **`persistent_api_rate_limiting_protocol` [ENFORCED]:** Even when free-tier quotas are exhausted and the agent transitions to metered cloud project `tidal-mode-490503-i9`, the agent **MUST NEVER stop limiting API calling**. The agent is strictly prohibited from running unthrottled burst calls or removing pacing delays. Mandate continuous adaptive rate-limiting (minimum 2000ms inter-call spacing, exponential backoff with jitter on 429/503 responses, and max concurrency ceiling = 1) across all Gemini model calls, Playwright CDP actions, and Google Cloud API operations to eliminate burst exhaustion and prevent runaway cloud billing.
 
 ---
 
-## 7. The 11 Forensic Error Classes & Runtime Recovery Protocols
+## 7. The Forensic Error Classes & Runtime Recovery Protocols
 
 Derived from the 33-minute forensic deep-dive podcast (*"The Gemini designer agent logic failure"*) and forensic Briefing Doc analysis:
 
@@ -324,6 +325,8 @@ Derived from the 33-minute forensic deep-dive podcast (*"The Gemini designer age
 | **Error 9: Color Contrast Violation on Dark Overlays** | **MEDIUM** | Text placed over containers fails WCAG 2.1 AA contrast ratio (< 4.5:1). | Text fails readability against container surface. | Audit container luminance: if dark, inject client light tokens (`--ast-global-color-5`), client accents (`--ast-global-color-4`), and neutral alpha shielding (`rgba(0, 0, 0, 0.65)`). If light, bind text to client dark tokens (`--ast-global-color-2`). |
 | **Error 10: Cross-Domain Boundary Violation** | **CRITICAL** | Agent clicks browser chrome, address bar, or external link. | Browser navigates off client domain into external site or settings. | Enforce domain boundary lock: assert URL origin matches expected host before and after every CDP command; raise `DomainBoundaryViolationError` immediately on divergence. |
 | **Error 11: Default Theme Fallback Violation** | **CRITICAL** | Redesign scaffolding job initiated from Clarity telemetry or client registry domain. | Agent attempts to invoke default synthetic theme choices (`#0F172A` / `#EAB308`) instead of the client's live brand palette. | **STRICTLY PROHIBITED**. Extract live domain tokens via CDP (`--ast-global-color-*`, `--e-global-color-*`); ground all buttons, cards, and text in the client's verified live palette. |
+| **Error 12: Mobile Horizontal Overflow Violation** | **HIGH** | Scroll width exceeds inner width at 375px mobile breakpoint (`scrollWidth > innerWidth`). | Content overflows horizontally off screen causing horizontal scrollbars on mobile devices. | Audit `scrollWidth <= innerWidth` at 375px; convert fixed pixel widths to fluid `max-width: 100%` and strip unmanaged margins before publishing. |
+| **Error 13: Unthrottled API Burst Violation** | **CRITICAL** | API calls dispatched without delay or after disabling rate-limiters following free-tier expiration. | Agent floods API endpoints resulting in 429 rate limit errors or runaway billing. | **Persistent API rate-limiting gate**: maintain continuous minimum 2000ms inter-request pacing, exponential backoff, and concurrency throttling regardless of free-tier exhaustion or paid tier activation; never disable rate-limiters upon free-tier depletion. |
 
 ---
 

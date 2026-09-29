@@ -91,6 +91,14 @@ class HorizontalOverflowError(SkillRepairError):
     """Error Class 12: Mobile horizontal overflow detected at 375px breakpoint (scrollWidth > innerWidth)."""
     pass
 
+class UnthrottledApiBurstViolationError(SkillRepairError):
+    """Error Class 13: Attempted unthrottled API burst calls without pacing or after disabling rate-limiting.
+    Even though the free-tier quota has finished, the agent must NEVER stop limiting API calls.
+    Continuous inter-call throttling (min 2000ms), exponential backoff, and concurrency pacing
+    must remain strictly enforced under project tidal-mode-490503-i9."""
+    pass
+
+
 
 # Default Settings
 DEFAULT_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyB1U5lBSKypeC66opHeNGJIC3RPvK4gCpg")
@@ -177,11 +185,25 @@ class ChromeDesignerAgent:
         self.device_pixel_ratio = 1.0
         self.ai = None
 
+        self.stage_7_status = "PAUSED_STANDBY"
+
         if genai and self.api_key:
             try:
                 self.ai = genai.Client(api_key=self.api_key)
             except Exception as e:
                 print(f"[ChromeDesignerAgent] Note on Gemini Client init: {e}")
+
+    def evaluate_stage_7_execution(self, resume_requested=False):
+        """
+        Stage 7 Lifecycle Gate:
+        Pauses post-deploy continuous telemetry feedback loop and keeps it aside
+        from core execution matrices (Stages 1-6) as long as user does not explicitly resume.
+        """
+        if not resume_requested and self.stage_7_status == "PAUSED_STANDBY":
+            print("[Stage 7 Gate] Stage 7 (Continuous Telemetry Feedback Loop) is currently PAUSED_STANDBY per user directive. Bypassing post-deploy cron/Looker sync.")
+            return {"status": "PAUSED_STANDBY", "bypassed": True, "resumption_required": True}
+        print("[Stage 7 Gate] Resuming Stage 7 telemetry synchronization.")
+        return {"status": "ACTIVE_RESUMED", "bypassed": False}
 
     # --- CONNECTION & LIFECYCLE (DUAL MODE: ATTACHED CDP VS. CLOUD RUNNER) ---
 
